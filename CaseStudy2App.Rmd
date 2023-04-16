@@ -1,0 +1,70 @@
+---
+title: "CaseStudy2App"
+author: "Kenya Roy"
+date: "2023-04-15"
+runtime: shiny
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo = FALSE}
+library(shiny)
+library(tidyverse)
+library(ggplot2)
+
+filePath <- reactive("Kenya_Roy_CaseStudy2DataforApp.csv")
+Case2_A_App <- read_csv("Kenya_Roy_CaseStudy2DataforApp.csv") #read in data
+dataset = Case2_A_App
+
+# Define UI
+ui <- fluidPage(
+  
+  # Application title
+  titlePanel("Employee Attrition"),
+  
+  # Sidebar layout with input and output definitions ----
+  sidebarLayout(
+    
+    # Sidebar panel for inputs ----
+    sidebarPanel(
+      selectInput(
+        inputId = "List1",
+        label = "Attrition",
+        choices = list(
+          'Attrition')
+      ),
+      selectInput(
+        inputId = "List2",
+        label = "by Variable",
+        choices = list(
+          'Age',
+          'Attrition',
+          'JobInvolvement',
+          'JobLevel',
+          'JobRole',
+          'MaritalStatus',
+          'MonthlyIncome',
+          'OverTime',
+          'TotalWorkingYears'))
+    ),
+    
+    # Place for Plot (Main Panel)
+    mainPanel(
+      plotOutput("pplot")
+    )
+  ))
+server <- function(input, output) {
+  output$pplot <- renderPlot({
+    Case2_A_App %>% 
+      ggplot(aes_string(x = input$List2,fill = {{input$list1}})) +
+      geom_bar(position = "fill") +
+      scale_y_continuous(labels = scales::percent) +
+      ggtitle(paste("Bar Plot of", input$List2, "by Attrition")) +
+      xlab(input$List2) +
+      ylab(input$List1)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
