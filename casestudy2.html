@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Kenya Roy" />
+
+<meta name="date" content="2023-04-06" />
+
+<title>CaseStudy2</title>
+
+<script src="site_libs/header-attrs-2.19/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">My Website</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="AboutMe.html">About Me</a>
+</li>
+<li>
+  <a href="Case-Study-1.html">Case Study 1</a>
+</li>
+<li>
+  <a href="Case-Study-1-App.html">Case Study 1 App</a>
+</li>
+<li>
+  <a href="casestudy2.html">Case Study 2</a>
+</li>
+<li class="dropdown-header">Case Study 2 App</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">CaseStudy2</h1>
+<h4 class="author">Kenya Roy</h4>
+<h4 class="date">2023-04-06</h4>
+
+</div>
+
+
+<pre class="r"><code># To begin analysis, we will upload necessary files and download packages needed for analysis and we will read in necessary data files provided by the company. 
+library(corrplot)</code></pre>
+<pre><code>## corrplot 0.92 loaded</code></pre>
+<pre class="r"><code>library(lares)
+library(RCurl) 
+library(jsonlite)
+library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages
+## ───────────────────────────────────────
+## tidyverse 1.3.2 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.4.1      ✔ purrr   1.0.1 
+## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
+## ✔ tidyr   1.2.1      ✔ stringr 1.5.0 
+## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ tidyr::complete() masks RCurl::complete()
+## ✖ dplyr::filter()   masks stats::filter()
+## ✖ purrr::flatten()  masks jsonlite::flatten()
+## ✖ dplyr::lag()      masks stats::lag()</code></pre>
+<pre class="r"><code>library(aws.s3)
+library(caret)</code></pre>
+<pre><code>## Loading required package: lattice
+## 
+## Attaching package: &#39;caret&#39;
+## 
+## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     lift</code></pre>
+<pre class="r"><code>library(class)
+library(olsrr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;olsrr&#39;
+## 
+## The following object is masked from &#39;package:datasets&#39;:
+## 
+##     rivers</code></pre>
+<pre class="r"><code>library(readxl)
+library(e1071)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;e1071&#39;
+## 
+## The following object is masked from &#39;package:lares&#39;:
+## 
+##     impute</code></pre>
+<pre class="r"><code>library(ggplot2)
+library(ggthemes)
+library(GGally)</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;GGally&#39;:
+##   method from   
+##   +.gg   ggplot2</code></pre>
+<pre class="r"><code>library(dplyr)
+library(janitor)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;janitor&#39;
+## 
+## The following object is masked from &#39;package:lares&#39;:
+## 
+##     crosstab
+## 
+## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     chisq.test, fisher.test</code></pre>
+<pre class="r"><code>library(mixlm)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;mixlm&#39;
+## 
+## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     tally
+## 
+## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     glm, lm</code></pre>
+<pre class="r"><code>#Read in CaseStudy2-data file
+Case2 &lt;- read.table(textConnection(getURL(&quot;https://ddsproject1.s3.amazonaws.com/CaseStudy2-data.csv&quot;
+                                          )), sep=&quot;,&quot;, header=TRUE)
+
+#Read in CaseStudy2 CompSet No Attrition file
+Case2_NA &lt;- read.table(textConnection(getURL(&quot;https://ddsproject1.s3.amazonaws.com/CaseStudy2CompSet+No+Attrition.csv&quot;
+                                          )), sep=&quot;,&quot;, header=TRUE)
+
+#Read in CaseStudy2 CompSet No salary file
+Case2_NS &lt;- read.table(textConnection(getURL(&quot;https://ddsproject1.s3.amazonaws.com/CaseStudy2CompSet+No+Salary.csv&quot;
+                                          )), sep=&quot;,&quot;, header=TRUE)
+view(Case2_NS)</code></pre>
+<pre class="r"><code>#We will get a glimpse at the data 
+view(Case2)
+glimpse(Case2)</code></pre>
+<pre><code>## Rows: 870
+## Columns: 36
+## $ ID                       &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14…
+## $ Age                      &lt;int&gt; 32, 40, 35, 32, 24, 27, 41, 37, 34, 34, 43, 2…
+## $ Attrition                &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No…
+## $ BusinessTravel           &lt;chr&gt; &quot;Travel_Rarely&quot;, &quot;Travel_Rarely&quot;, &quot;Travel_Fre…
+## $ DailyRate                &lt;int&gt; 117, 1308, 200, 801, 567, 294, 1283, 309, 133…
+## $ Department               &lt;chr&gt; &quot;Sales&quot;, &quot;Research &amp; Development&quot;, &quot;Research …
+## $ DistanceFromHome         &lt;int&gt; 13, 14, 18, 1, 2, 10, 5, 10, 10, 10, 6, 1, 7,…
+## $ Education                &lt;int&gt; 4, 3, 2, 4, 1, 2, 5, 4, 4, 4, 3, 2, 3, 1, 2, …
+## $ EducationField           &lt;chr&gt; &quot;Life Sciences&quot;, &quot;Medical&quot;, &quot;Life Sciences&quot;, …
+## $ EmployeeCount            &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+## $ EmployeeNumber           &lt;int&gt; 859, 1128, 1412, 2016, 1646, 733, 1448, 1105,…
+## $ EnvironmentSatisfaction  &lt;int&gt; 2, 3, 3, 3, 1, 4, 2, 4, 3, 4, 1, 3, 3, 3, 4, …
+## $ Gender                   &lt;chr&gt; &quot;Male&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Female&quot;, &quot;Female&quot;, &quot;…
+## $ HourlyRate               &lt;int&gt; 73, 44, 60, 48, 32, 32, 90, 88, 87, 92, 81, 4…
+## $ JobInvolvement           &lt;int&gt; 3, 2, 3, 3, 3, 3, 4, 2, 3, 2, 2, 3, 3, 3, 3, …
+## $ JobLevel                 &lt;int&gt; 2, 5, 3, 3, 1, 3, 1, 2, 1, 2, 5, 1, 3, 1, 1, …
+## $ JobRole                  &lt;chr&gt; &quot;Sales Executive&quot;, &quot;Research Director&quot;, &quot;Manu…
+## $ JobSatisfaction          &lt;int&gt; 4, 3, 4, 4, 4, 1, 3, 4, 3, 3, 3, 4, 3, 2, 1, …
+## $ MaritalStatus            &lt;chr&gt; &quot;Divorced&quot;, &quot;Single&quot;, &quot;Single&quot;, &quot;Married&quot;, &quot;S…
+## $ MonthlyIncome            &lt;int&gt; 4403, 19626, 9362, 10422, 3760, 8793, 2127, 6…
+## $ MonthlyRate              &lt;int&gt; 9250, 17544, 19944, 24032, 17218, 4809, 5561,…
+## $ NumCompaniesWorked       &lt;int&gt; 2, 1, 2, 1, 1, 1, 2, 2, 1, 1, 7, 1, 3, 1, 6, …
+## $ Over18                   &lt;chr&gt; &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, …
+## $ OverTime                 &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;…
+## $ PercentSalaryHike        &lt;int&gt; 11, 14, 11, 19, 13, 21, 12, 14, 19, 14, 13, 1…
+## $ PerformanceRating        &lt;int&gt; 3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 3, 3, 4, 3, 3, …
+## $ RelationshipSatisfaction &lt;int&gt; 3, 1, 3, 3, 3, 3, 1, 3, 4, 2, 4, 2, 2, 1, 3, …
+## $ StandardHours            &lt;int&gt; 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 8…
+## $ StockOptionLevel         &lt;int&gt; 1, 0, 0, 2, 0, 2, 0, 3, 1, 1, 0, 1, 0, 1, 0, …
+## $ TotalWorkingYears        &lt;int&gt; 8, 21, 10, 14, 6, 9, 7, 8, 1, 8, 21, 3, 17, 1…
+## $ TrainingTimesLastYear    &lt;int&gt; 3, 2, 2, 3, 2, 4, 5, 5, 2, 3, 2, 2, 3, 3, 3, …
+## $ WorkLifeBalance          &lt;int&gt; 2, 4, 3, 3, 3, 2, 2, 3, 3, 2, 3, 3, 4, 3, 4, …
+## $ YearsAtCompany           &lt;int&gt; 5, 20, 2, 14, 6, 9, 4, 1, 1, 8, 16, 3, 8, 1, …
+## $ YearsInCurrentRole       &lt;int&gt; 2, 7, 2, 10, 3, 7, 2, 0, 1, 2, 12, 2, 5, 0, 6…
+## $ YearsSinceLastPromotion  &lt;int&gt; 0, 4, 2, 5, 1, 1, 0, 0, 0, 7, 6, 2, 1, 0, 5, …
+## $ YearsWithCurrManager     &lt;int&gt; 3, 9, 2, 7, 3, 7, 3, 0, 0, 7, 14, 2, 6, 0, 7,…</code></pre>
+<pre class="r"><code>get_dupes(Case2)</code></pre>
+<pre><code>## No variable names specified - using all columns.</code></pre>
+<pre><code>## No duplicate combinations found of: ID, Age, Attrition, BusinessTravel, DailyRate, Department, DistanceFromHome, Education, EducationField, ... and 27 other variables</code></pre>
+<pre><code>##  [1] ID                       Age                      Attrition               
+##  [4] BusinessTravel           DailyRate                Department              
+##  [7] DistanceFromHome         Education                EducationField          
+## [10] EmployeeCount            EmployeeNumber           EnvironmentSatisfaction 
+## [13] Gender                   HourlyRate               JobInvolvement          
+## [16] JobLevel                 JobRole                  JobSatisfaction         
+## [19] MaritalStatus            MonthlyIncome            MonthlyRate             
+## [22] NumCompaniesWorked       Over18                   OverTime                
+## [25] PercentSalaryHike        PerformanceRating        RelationshipSatisfaction
+## [28] StandardHours            StockOptionLevel         TotalWorkingYears       
+## [31] TrainingTimesLastYear    WorkLifeBalance          YearsAtCompany          
+## [34] YearsInCurrentRole       YearsSinceLastPromotion  YearsWithCurrManager    
+## [37] dupe_count              
+## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+<pre class="r"><code>missing &lt;- sapply(Case2, function(x) sum(is.na(x)))
+sum(missing)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>summary(Case2)</code></pre>
+<pre><code>##        ID             Age         Attrition         BusinessTravel    
+##  Min.   :  1.0   Min.   :18.00   Length:870         Length:870        
+##  1st Qu.:218.2   1st Qu.:30.00   Class :character   Class :character  
+##  Median :435.5   Median :35.00   Mode  :character   Mode  :character  
+##  Mean   :435.5   Mean   :36.83                                        
+##  3rd Qu.:652.8   3rd Qu.:43.00                                        
+##  Max.   :870.0   Max.   :60.00                                        
+##    DailyRate       Department        DistanceFromHome   Education    
+##  Min.   : 103.0   Length:870         Min.   : 1.000   Min.   :1.000  
+##  1st Qu.: 472.5   Class :character   1st Qu.: 2.000   1st Qu.:2.000  
+##  Median : 817.5   Mode  :character   Median : 7.000   Median :3.000  
+##  Mean   : 815.2                      Mean   : 9.339   Mean   :2.901  
+##  3rd Qu.:1165.8                      3rd Qu.:14.000   3rd Qu.:4.000  
+##  Max.   :1499.0                      Max.   :29.000   Max.   :5.000  
+##  EducationField     EmployeeCount EmployeeNumber   EnvironmentSatisfaction
+##  Length:870         Min.   :1     Min.   :   1.0   Min.   :1.000          
+##  Class :character   1st Qu.:1     1st Qu.: 477.2   1st Qu.:2.000          
+##  Mode  :character   Median :1     Median :1039.0   Median :3.000          
+##                     Mean   :1     Mean   :1029.8   Mean   :2.701          
+##                     3rd Qu.:1     3rd Qu.:1561.5   3rd Qu.:4.000          
+##                     Max.   :1     Max.   :2064.0   Max.   :4.000          
+##     Gender            HourlyRate     JobInvolvement     JobLevel    
+##  Length:870         Min.   : 30.00   Min.   :1.000   Min.   :1.000  
+##  Class :character   1st Qu.: 48.00   1st Qu.:2.000   1st Qu.:1.000  
+##  Mode  :character   Median : 66.00   Median :3.000   Median :2.000  
+##                     Mean   : 65.61   Mean   :2.723   Mean   :2.039  
+##                     3rd Qu.: 83.00   3rd Qu.:3.000   3rd Qu.:3.000  
+##                     Max.   :100.00   Max.   :4.000   Max.   :5.000  
+##    JobRole          JobSatisfaction MaritalStatus      MonthlyIncome  
+##  Length:870         Min.   :1.000   Length:870         Min.   : 1081  
+##  Class :character   1st Qu.:2.000   Class :character   1st Qu.: 2840  
+##  Mode  :character   Median :3.000   Mode  :character   Median : 4946  
+##                     Mean   :2.709                      Mean   : 6390  
+##                     3rd Qu.:4.000                      3rd Qu.: 8182  
+##                     Max.   :4.000                      Max.   :19999  
+##   MonthlyRate    NumCompaniesWorked    Over18            OverTime        
+##  Min.   : 2094   Min.   :0.000      Length:870         Length:870        
+##  1st Qu.: 8092   1st Qu.:1.000      Class :character   Class :character  
+##  Median :14074   Median :2.000      Mode  :character   Mode  :character  
+##  Mean   :14326   Mean   :2.728                                           
+##  3rd Qu.:20456   3rd Qu.:4.000                                           
+##  Max.   :26997   Max.   :9.000                                           
+##  PercentSalaryHike PerformanceRating RelationshipSatisfaction StandardHours
+##  Min.   :11.0      Min.   :3.000     Min.   :1.000            Min.   :80   
+##  1st Qu.:12.0      1st Qu.:3.000     1st Qu.:2.000            1st Qu.:80   
+##  Median :14.0      Median :3.000     Median :3.000            Median :80   
+##  Mean   :15.2      Mean   :3.152     Mean   :2.707            Mean   :80   
+##  3rd Qu.:18.0      3rd Qu.:3.000     3rd Qu.:4.000            3rd Qu.:80   
+##  Max.   :25.0      Max.   :4.000     Max.   :4.000            Max.   :80   
+##  StockOptionLevel TotalWorkingYears TrainingTimesLastYear WorkLifeBalance
+##  Min.   :0.0000   Min.   : 0.00     Min.   :0.000         Min.   :1.000  
+##  1st Qu.:0.0000   1st Qu.: 6.00     1st Qu.:2.000         1st Qu.:2.000  
+##  Median :1.0000   Median :10.00     Median :3.000         Median :3.000  
+##  Mean   :0.7839   Mean   :11.05     Mean   :2.832         Mean   :2.782  
+##  3rd Qu.:1.0000   3rd Qu.:15.00     3rd Qu.:3.000         3rd Qu.:3.000  
+##  Max.   :3.0000   Max.   :40.00     Max.   :6.000         Max.   :4.000  
+##  YearsAtCompany   YearsInCurrentRole YearsSinceLastPromotion
+##  Min.   : 0.000   Min.   : 0.000     Min.   : 0.000         
+##  1st Qu.: 3.000   1st Qu.: 2.000     1st Qu.: 0.000         
+##  Median : 5.000   Median : 3.000     Median : 1.000         
+##  Mean   : 6.962   Mean   : 4.205     Mean   : 2.169         
+##  3rd Qu.:10.000   3rd Qu.: 7.000     3rd Qu.: 3.000         
+##  Max.   :40.000   Max.   :18.000     Max.   :15.000         
+##  YearsWithCurrManager
+##  Min.   : 0.00       
+##  1st Qu.: 2.00       
+##  Median : 3.00       
+##  Mean   : 4.14       
+##  3rd Qu.: 7.00       
+##  Max.   :17.00</code></pre>
+<pre class="r"><code>#We can see that there are variables that will not impact the focus of our EDA, in other words, we will remove the non-influential factors. These factors were found to be not influential because they have no bearing on the variables of interest.
+#First, we will create datasets for EDA and modeling.
+Case2_clean &lt;- Case2 %&gt;% select(-c(&quot;Over18&quot;, &quot;EmployeeCount&quot;, &quot;StandardHours&quot;, &quot;EmployeeNumber&quot;))
+Case2_EDA &lt;- Case2_clean
+Case2_A &lt;- Case2_clean #Dataset for modeling
+summary(Case2_A)</code></pre>
+<pre><code>##        ID             Age         Attrition         BusinessTravel    
+##  Min.   :  1.0   Min.   :18.00   Length:870         Length:870        
+##  1st Qu.:218.2   1st Qu.:30.00   Class :character   Class :character  
+##  Median :435.5   Median :35.00   Mode  :character   Mode  :character  
+##  Mean   :435.5   Mean   :36.83                                        
+##  3rd Qu.:652.8   3rd Qu.:43.00                                        
+##  Max.   :870.0   Max.   :60.00                                        
+##    DailyRate       Department        DistanceFromHome   Education    
+##  Min.   : 103.0   Length:870         Min.   : 1.000   Min.   :1.000  
+##  1st Qu.: 472.5   Class :character   1st Qu.: 2.000   1st Qu.:2.000  
+##  Median : 817.5   Mode  :character   Median : 7.000   Median :3.000  
+##  Mean   : 815.2                      Mean   : 9.339   Mean   :2.901  
+##  3rd Qu.:1165.8                      3rd Qu.:14.000   3rd Qu.:4.000  
+##  Max.   :1499.0                      Max.   :29.000   Max.   :5.000  
+##  EducationField     EnvironmentSatisfaction    Gender            HourlyRate    
+##  Length:870         Min.   :1.000           Length:870         Min.   : 30.00  
+##  Class :character   1st Qu.:2.000           Class :character   1st Qu.: 48.00  
+##  Mode  :character   Median :3.000           Mode  :character   Median : 66.00  
+##                     Mean   :2.701                              Mean   : 65.61  
+##                     3rd Qu.:4.000                              3rd Qu.: 83.00  
+##                     Max.   :4.000                              Max.   :100.00  
+##  JobInvolvement     JobLevel       JobRole          JobSatisfaction
+##  Min.   :1.000   Min.   :1.000   Length:870         Min.   :1.000  
+##  1st Qu.:2.000   1st Qu.:1.000   Class :character   1st Qu.:2.000  
+##  Median :3.000   Median :2.000   Mode  :character   Median :3.000  
+##  Mean   :2.723   Mean   :2.039                      Mean   :2.709  
+##  3rd Qu.:3.000   3rd Qu.:3.000                      3rd Qu.:4.000  
+##  Max.   :4.000   Max.   :5.000                      Max.   :4.000  
+##  MaritalStatus      MonthlyIncome    MonthlyRate    NumCompaniesWorked
+##  Length:870         Min.   : 1081   Min.   : 2094   Min.   :0.000     
+##  Class :character   1st Qu.: 2840   1st Qu.: 8092   1st Qu.:1.000     
+##  Mode  :character   Median : 4946   Median :14074   Median :2.000     
+##                     Mean   : 6390   Mean   :14326   Mean   :2.728     
+##                     3rd Qu.: 8182   3rd Qu.:20456   3rd Qu.:4.000     
+##                     Max.   :19999   Max.   :26997   Max.   :9.000     
+##    OverTime         PercentSalaryHike PerformanceRating
+##  Length:870         Min.   :11.0      Min.   :3.000    
+##  Class :character   1st Qu.:12.0      1st Qu.:3.000    
+##  Mode  :character   Median :14.0      Median :3.000    
+##                     Mean   :15.2      Mean   :3.152    
+##                     3rd Qu.:18.0      3rd Qu.:3.000    
+##                     Max.   :25.0      Max.   :4.000    
+##  RelationshipSatisfaction StockOptionLevel TotalWorkingYears
+##  Min.   :1.000            Min.   :0.0000   Min.   : 0.00    
+##  1st Qu.:2.000            1st Qu.:0.0000   1st Qu.: 6.00    
+##  Median :3.000            Median :1.0000   Median :10.00    
+##  Mean   :2.707            Mean   :0.7839   Mean   :11.05    
+##  3rd Qu.:4.000            3rd Qu.:1.0000   3rd Qu.:15.00    
+##  Max.   :4.000            Max.   :3.0000   Max.   :40.00    
+##  TrainingTimesLastYear WorkLifeBalance YearsAtCompany   YearsInCurrentRole
+##  Min.   :0.000         Min.   :1.000   Min.   : 0.000   Min.   : 0.000    
+##  1st Qu.:2.000         1st Qu.:2.000   1st Qu.: 3.000   1st Qu.: 2.000    
+##  Median :3.000         Median :3.000   Median : 5.000   Median : 3.000    
+##  Mean   :2.832         Mean   :2.782   Mean   : 6.962   Mean   : 4.205    
+##  3rd Qu.:3.000         3rd Qu.:3.000   3rd Qu.:10.000   3rd Qu.: 7.000    
+##  Max.   :6.000         Max.   :4.000   Max.   :40.000   Max.   :18.000    
+##  YearsSinceLastPromotion YearsWithCurrManager
+##  Min.   : 0.000          Min.   : 0.00       
+##  1st Qu.: 0.000          1st Qu.: 2.00       
+##  Median : 1.000          Median : 3.00       
+##  Mean   : 2.169          Mean   : 4.14       
+##  3rd Qu.: 3.000          3rd Qu.: 7.00       
+##  Max.   :15.000          Max.   :17.00</code></pre>
+<pre class="r"><code>#We first want to inspect the variables in the dataset starting with variables of interest: Attrition, Monthly Income 
+Case2_EDA %&gt;% 
+  ggplot(aes(x=Attrition,fill=Attrition)) + 
+  geom_bar()+
+  geom_text(aes(label = after_stat(count)), stat = &quot;count&quot;, vjust = 2, colour = &quot;white&quot;)+
+  xlab(&quot;Attrition&quot;) + ylab(&quot;Count&quot;) + 
+  ggtitle(&quot;Attrition Count&quot;)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>#We can see that the attrition rate at Frito Lay is 16% as 140/870 observations in the dataset are coded &quot;Yes&quot; for Attrition.   </code></pre>
+<pre class="r"><code>#Looking at Monthly Income, we can see the following:
+Case2_EDA %&gt;% 
+  ggplot(aes(x=MonthlyIncome))+
+  geom_histogram(binwidth = 1000, color = &quot;black&quot;, fill = &quot;orange&quot;) + 
+  xlab(&quot;Monthly Income&quot;) + ylab(&quot;Count&quot;) + 
+  ggtitle(&quot;Distribution of Monthly Income&quot;)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>#This plot reflects a right-skewed distribution. A majority of Frito Lay employees make less than 10,000 a month. 
+#The range of employee income from 0 to $20,000 is very wide. In order to identify possible relationships between income and attrition, we found it necessary to group salaries and compare to attrition.</code></pre>
+<pre class="r"><code>#Groups were divided based on federal tax brackets with the smallest salary group containing those who fall into the lowest 2 tax brackets. 
+#Five Groups: 0-3500, 3501-7450, 7451-14170, 14171-17995, 17996-20000
+Case2_EDA$SalaryGroup &lt;- cut(Case2_EDA$MonthlyIncome, c(0,3500,7450,14170,17995,20000), labels = c(&quot;&lt;3,500&quot;, &quot;3,501 - 7,450&quot;, &quot;7,451 - 14,170&quot;, &quot;14,171 - 17,995&quot;, &quot;17,996 - &lt;20,000&quot;))</code></pre>
+<pre class="r"><code>#We will now look at the same distribution of monthly income with the new salary groups.
+Case2_EDA %&gt;% 
+  ggplot(aes(SalaryGroup)) +
+  geom_bar( fill = &quot;orange&quot;) + 
+  xlab(&quot;Monthly Income by Salary Group&quot;) + ylab(&quot;Count&quot;) + 
+  ggtitle(&quot;Distribution of Monthly Income by Salary Group&quot;)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>#This bar chart shows that a majority of employees earn less than 7450 a month. </code></pre>
+<pre class="r"><code>#Knowing this, we will want to inspect the relationship between Monthly Income and Attrition as it relates lower monthly earners at Frito Lay.
+h_line &lt;- .16 
+Case2_EDA %&gt;% 
+  ggplot(aes(x=SalaryGroup,fill=Attrition)) +
+  geom_bar(position = &quot;fill&quot;)+
+  ggtitle(&quot;Attrition vs Monthly Income by Salary Group&quot;) +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(0, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) + 
+  xlab(&quot;Salary Groups&quot;) + 
+  ylab(&quot;Employees (Percent)&quot;)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>#Here, we can see that employees in the 3 lower salary groups have higher attrition than the two higher salary groups. We can also see that those who earn less than 3,500 a month at Frito-Lay have an attrition rate higher than average (over25%). 
+#Interestingly, we see that while the higher 2 salary groups have similar counts of employees, the attrition rate for the 4th tier salary group appears to be zero while the highest income group is closer to the company average.</code></pre>
+<pre class="r"><code>### Now we will examine Age &amp; Attrition 
+Case2_EDA %&gt;%
+ggplot(aes(x = Age, fill = Attrition)) + 
+  geom_histogram(color=&quot;black&quot;, fill = &quot;orange&quot;) + 
+  xlab(&quot;Attrition&quot;) + ylab(&quot;Monthly Income&quot;) + 
+  ggtitle(&quot;Attrition vs. Age&quot;)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>#We can see that while employee age ranges from 18 - 60, the distribution of ages are right-skewed. Like we did with monthly income, we will want to group employees by age to determine attrition&#39;s relationship to age.</code></pre>
+<pre class="r"><code>#Groups were divided into five age groups. 
+#Five Groups: 18-25, 26-35, 36-45, 46-55, 56-60
+Case2_EDA$AgeGroup &lt;- cut(Case2_EDA$Age, c(0,25,35,45,55,60), labels = c(&quot;&lt;25&quot;, &quot;26-35&quot;, &quot;36 - 45&quot;, &quot;46 - 55&quot;, &quot;56 - 60&quot;))</code></pre>
+<pre class="r"><code>#We will now look at the same distribution of monthly income with the new salary groups.
+Case2_EDA %&gt;% 
+  ggplot(aes(AgeGroup)) +
+  geom_bar( fill = &quot;orange&quot;) + 
+  xlab(&quot;Age by Group&quot;) + ylab(&quot;Count&quot;) + 
+  ggtitle(&quot;Distribution of Age by Group&quot;)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>#This bar chart shows that a majority of employees age under the age of 45. </code></pre>
+<pre class="r"><code>#Knowing this, we will want to inspect the relationship between Age and Attrition as it relates younger employees at Frito Lay.
+h_line &lt;- .16 
+Case2_EDA %&gt;%
+  ggplot(aes(x=AgeGroup,fill=Attrition)) +
+  geom_bar(position = &quot;fill&quot;) +
+  ggtitle(&quot;Attrition vs Age by Group&quot;) +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(0, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) + 
+  xlab(&quot;Age Groups&quot;) + 
+  ylab(&quot;Employees (Percent)&quot;)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>#We can see that younger employees under 35, especially those under 25, have attritrion rates above company average. At the other end of the spectrum, older employees, ages 56 and above, have an attrition rate above company average.</code></pre>
+<pre class="r"><code>#We will quickly inspect other variables in the dataset and compare them to the overall company attrition rate. 
+
+#OverTime &amp; Attrition 
+Case2_EDA %&gt;% 
+  ggplot(aes(x = OverTime, fill = Attrition)) +
+  geom_bar(position = &#39;fill&#39;) +
+  ggtitle(&quot;Overtime &amp; Attrition&quot;) +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(0, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) + 
+  xlab(&quot;OverTime&quot;) + 
+  ylab(&quot;Attrition&quot;)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code>#Non-overtime workers&#39; attrition rate is much higher than the company average and the rate of employees who don&#39;t work overtime at Frito-Lay. It will be important to look at overtime in comparison to other factors impacting attrition at Frito-Lay.</code></pre>
+<pre class="r"><code>#Now, we will examine Job Involvement versus Attrition.
+Case2_EDA %&gt;%
+  ggplot(aes(x = JobInvolvement, fill = Attrition)) +
+  geom_bar(position = &#39;fill&#39;) +
+  ggtitle(&quot;Attrition vs Job Involvement&quot;) +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(1, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) + 
+  xlab(&quot;Job Involvement&quot;) + 
+  ylab(&quot;Attrition&quot;)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<pre class="r"><code>#It appears that the attrition level for employees with level 1 job involvement have the highest turnover. Moreover, the turnover lessens as the level increases.</code></pre>
+<pre class="r"><code>#Job Involvement vs. Attrition based on OverTime
+Case2_EDA %&gt;%
+  ggplot(aes(x = JobInvolvement, fill = Attrition)) +
+  geom_bar(position = &#39;fill&#39;) +
+  ggtitle(&quot;Job Involvement vs. Attrition based on Overtime&quot;) +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(1, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) +
+  facet_wrap( ~ OverTime) +
+  xlab(&quot;Job Involvement&quot;) + 
+  ylab(&quot;Attrition&quot;)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<pre class="r"><code>#We can see a very high attrition percentage for employees with level 1 job involvement who worked overtime. Attrition decreases as the levels increase. Attrition levels are much lower for employees who do not work overtime. The downward trend of attrition as levels increase is also seen here. </code></pre>
+<pre class="r"><code>#Work-Life Balance &amp; Attrition
+Case2_EDA %&gt;% 
+  ggplot(aes(x = WorkLifeBalance, fill = Attrition)) +
+  geom_bar(position = &#39;fill&#39;) +
+  ggtitle(&quot;Work-Life Balance and Attrition&quot;) +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(1, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) +
+  xlab(&quot;Work-Life Balance&quot;) + 
+  ylab(&quot;Attrition&quot;)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre class="r"><code>#All levels of Work-Life balance have attrition levels close to company average. Employees with work-life balance tier 1 have the highest attrition level. We can identify what the work-life balance means applying it to OverTime as we did above.</code></pre>
+<pre class="r"><code>#Work-life Balance and Attrition based on overtime
+Case2_EDA %&gt;%
+  ggplot(aes(x = WorkLifeBalance, fill = Attrition)) +
+  geom_bar(position = &#39;fill&#39;) +
+  ggtitle(&quot;Work-Life Balance vs. Attrition based on Overtime&quot;) +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(1, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) +
+  facet_wrap( ~ OverTime) +
+  xlab(&quot;Work-Life Balance&quot;) + 
+  ylab(&quot;Attrition&quot;)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code>#Employees who work overtime with level 1 work-life balance (assumed to be more skewed towards work) have higher attrition than those with higher tier work-life balance levels. Employees with level 1 work-life balance who do not work overtime have the highest attrition rate, still lower than the attrition rates for those who work overtime. 
+
+#We could look at work-life balance based on job roles to get a better idea about the distribution of attrition. </code></pre>
+<pre class="r"><code>#Work-Life Balance &amp; Attrition based on JobRole
+Case2_EDA %&gt;% ggplot(aes(x = WorkLifeBalance, fill = Attrition)) +
+  geom_bar(position = &#39;fill&#39;) +
+  facet_wrap( ~ JobRole) + 
+  ggtitle(&quot;Work-Life Balance &amp; Attrition based on JobRole&quot;) +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(1, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) +
+  xlab(&quot;Work-Life Balance&quot;) + 
+  ylab(&quot;Attrition&quot;)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<pre class="r"><code>#We can see roles like Lab Techs, Sales Representatives, Sales Execs, and Research scientists have higher attrition rates.</code></pre>
+<pre class="r"><code>#Work-Life Balance &amp; Attrition based on JobLevel 
+Case2_EDA %&gt;% 
+  ggplot(aes(x = WorkLifeBalance, fill = Attrition)) +
+  geom_bar(position = &#39;fill&#39;) +
+  facet_wrap( ~ JobLevel) + 
+  ggtitle(&quot;Work-Life Balance &amp; Attrition based on JobLevel&quot;) +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(1, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) +
+  xlab(&quot;Work-Life Balance&quot;) + 
+  ylab(&quot;Attrition&quot;)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<pre class="r"><code>#We can see here that attrition percentages seem to decrease with job levels as tiers increase across work-life balance with exception to employees with 3rd tier work-life balance in job level 5. </code></pre>
+<pre class="r"><code>#Work-Life Balance &amp; Attrition based on OverTime
+Case2_EDA %&gt;% 
+  ggplot(aes(x = WorkLifeBalance, fill = Attrition)) +
+  geom_bar(position = &#39;fill&#39;) +
+  facet_wrap( ~ OverTime) + 
+  ggtitle(&quot;Work-Life Balance &amp; Attrition based on OverTime&quot;) +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(1, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) +
+  xlab(&quot;Work-Life Balance&quot;) + 
+  ylab(&quot;Attrition&quot;)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<pre class="r"><code>#Again, we see that employees who work overtime have higher attrition rates and those with less work life balance have higher attrition rates regardless of overtime work assignments.</code></pre>
+<pre class="r"><code>#Here we will examine Overtime and WorkLifeBalance with the variables of interest. 
+Case2_EDA %&gt;% select(OverTime,MonthlyIncome,WorkLifeBalance,Attrition) %&gt;% 
+  ggpairs(aes(color=Attrition), lower=list(combo=wrap(&quot;facethist&quot;, binwidth=100)))</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<pre class="r"><code>#Now that we&#39;ve done a surface level look at the variables, we will now run a Linear Regression model to determine the variables that most impact attrition at Frito-Lay.
+#To determine relationships between variables using linear regression, we will first need to make sure all variables are numerics. 
+
+#Create Levels (alphabetical) for categorical variables and turn all variables numeric
+
+Case2_A$Attrition &lt;- ifelse(Case2$Attrition == &quot;Yes&quot;, 1, 0)
+
+Case2_A$BusinessTravel &lt;- factor(ifelse(Case2$BusinessTravel == &quot;Non-Travel&quot;, 1,
+                      ifelse(Case2$BusinessTravel == &quot;Travel_Rarely&quot;, 2,
+                          ifelse(Case2$BusinessTravel == &quot;Travel_Frequently&quot;, 3, &quot;NA&quot;))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;NA&quot;))
+
+Case2_A$Department &lt;- factor(ifelse(Case2$Department == &quot;Human Resources&quot;, 1,
+                      ifelse(Case2$Department == &quot;Research &amp; Development&quot;, 2,
+                          ifelse(Case2$Department == &quot;Sales&quot;, 3, &quot;NA&quot;))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;NA&quot;))
+
+Case2_A$EducationField &lt;- factor(ifelse(Case2$EducationField == &quot;Human Resources&quot;, 1,
+                    ifelse(Case2$EducationField == &quot;Life Sciences&quot;, 2,
+                          ifelse(Case2$EducationField == &quot;Marketing&quot;, 3, 
+                             ifelse(Case2$EducationField == &quot;Medical&quot;, 4,
+                                    ifelse(Case2$EducationField == &quot;Other&quot;, 5,
+                                          ifelse(Case2$EducationField == &quot;Technical Degree&quot;, 6, &quot;NA&quot;)))))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;NA&quot;))
+                                               
+Case2_A$Gender &lt;- ifelse(Case2$Gender == &quot;Female&quot;, 1, 2)
+
+Case2_A$JobRole &lt;- factor(ifelse(Case2$JobRole == &quot;Healthcare Representative&quot;, 1,
+                          ifelse(Case2$JobRole == &quot;Human Resources&quot;, 2, 
+                             ifelse(Case2$JobRole == &quot;Laboratory Technician&quot;, 3,
+                                    ifelse(Case2$JobRole == &quot;Manager&quot;, 4,
+                                          ifelse(Case2$JobRole == &quot;Manufacturing Director&quot;, 5, 
+                                                 ifelse(Case2$JobRole == &quot;Research Director&quot;, 6,
+                                                        ifelse(Case2$JobRole == &quot;Research Scientist&quot;, 7,
+                                                               ifelse(Case2$JobRole == &quot;Sales Executive&quot;, 8,
+                                                                      ifelse(Case2$JobRole == &quot;Sales Representative&quot;, 9, &quot;NA&quot;))))))))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;,&quot;6&quot;,&quot;7&quot;,&quot;8&quot;,&quot;9&quot;,&quot;NA&quot;))
+
+Case2_A$MaritalStatus &lt;- factor(ifelse(Case2$MaritalStatus == &quot;Single&quot;, 1,
+                      ifelse(Case2$MaritalStatus == &quot;Married&quot;, 2,
+                          ifelse(Case2$MaritalStatus == &quot;Divorced&quot;, 3, &quot;NA&quot;))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;NA&quot;))
+
+Case2_A$OverTime &lt;- ifelse(Case2$OverTime == &quot;Yes&quot;, 1, 0)
+view(Case2_A)
+
+
+Case2_A$Attrition &lt;- as.numeric(Case2_A$Attrition)
+Case2_A$BusinessTravel &lt;- as.numeric(Case2_A$BusinessTravel)
+Case2_A$Department &lt;- as.numeric(Case2_A$Department)
+Case2_A$EducationField &lt;- as.numeric(Case2_A$EducationField)
+Case2_A$Gender &lt;- as.numeric(Case2_A$Gender)
+Case2_A$JobRole &lt;- as.numeric(Case2_A$JobRole)
+Case2_A$MaritalStatus &lt;- as.numeric(Case2_A$MaritalStatus)
+Case2_A$OverTime &lt;- as.numeric(Case2_A$OverTime)
+
+Case2_A$ID &lt;- as.numeric(Case2_A$ID)
+Case2_A$Age &lt;- as.numeric(Case2_A$Age)
+Case2_A$DailyRate &lt;- as.numeric(Case2_A$DailyRate)
+Case2_A$DistanceFromHome &lt;- as.numeric(Case2_A$DistanceFromHome)
+Case2_A$Education &lt;- as.numeric(Case2_A$Education)
+Case2_A$EnvironmentSatisfaction &lt;- as.numeric(Case2_A$EnvironmentSatisfaction)
+Case2_A$HourlyRate &lt;- as.numeric(Case2_A$HourlyRate)
+Case2_A$JobInvolvement &lt;- as.numeric(Case2_A$JobInvolvement)
+Case2_A$JobLevel &lt;- as.numeric(Case2_A$JobLevel)
+Case2_A$JobSatisfaction &lt;- as.numeric(Case2_A$JobSatisfaction)
+Case2_A$MonthlyIncome &lt;- as.numeric(Case2_A$MonthlyIncome)
+Case2_A$MonthlyRate &lt;- as.numeric(Case2_A$MonthlyRate)
+Case2_A$NumCompaniesWorked &lt;- as.numeric(Case2_A$NumCompaniesWorked)
+Case2_A$PercentSalaryHike &lt;- as.numeric(Case2_A$PercentSalaryHike)
+Case2_A$PerformanceRating &lt;- as.numeric(Case2_A$PerformanceRating)
+Case2_A$RelationshipSatisfaction &lt;- as.numeric(Case2_A$RelationshipSatisfaction)
+Case2_A$StockOptionLevel &lt;- as.numeric(Case2_A$StockOptionLevel)
+Case2_A$TotalWorkingYears &lt;- as.numeric(Case2_A$TotalWorkingYears)
+Case2_A$TrainingTimesLastYear &lt;- as.numeric(Case2_A$TrainingTimesLastYear)
+Case2_A$WorkLifeBalance &lt;- as.numeric(Case2_A$WorkLifeBalance)
+Case2_A$YearsAtCompany &lt;- as.numeric(Case2_A$YearsAtCompany)
+Case2_A$YearsInCurrentRole &lt;- as.numeric(Case2_A$YearsInCurrentRole)
+Case2_A$YearsSinceLastPromotion &lt;- as.numeric(Case2_A$YearsSinceLastPromotion)
+Case2_A$YearsWithCurrManager &lt;- as.numeric(Case2_A$YearsWithCurrManager)
+
+missing &lt;- sapply(Case2_A, function(x) sum(is.na(x)))
+sum(missing)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>summary(Case2_A)</code></pre>
+<pre><code>##        ID             Age          Attrition      BusinessTravel 
+##  Min.   :  1.0   Min.   :18.00   Min.   :0.0000   Min.   :1.000  
+##  1st Qu.:218.2   1st Qu.:30.00   1st Qu.:0.0000   1st Qu.:2.000  
+##  Median :435.5   Median :35.00   Median :0.0000   Median :2.000  
+##  Mean   :435.5   Mean   :36.83   Mean   :0.1609   Mean   :2.074  
+##  3rd Qu.:652.8   3rd Qu.:43.00   3rd Qu.:0.0000   3rd Qu.:2.000  
+##  Max.   :870.0   Max.   :60.00   Max.   :1.0000   Max.   :3.000  
+##    DailyRate        Department    DistanceFromHome   Education    
+##  Min.   : 103.0   Min.   :1.000   Min.   : 1.000   Min.   :1.000  
+##  1st Qu.: 472.5   1st Qu.:2.000   1st Qu.: 2.000   1st Qu.:2.000  
+##  Median : 817.5   Median :2.000   Median : 7.000   Median :3.000  
+##  Mean   : 815.2   Mean   :2.274   Mean   : 9.339   Mean   :2.901  
+##  3rd Qu.:1165.8   3rd Qu.:3.000   3rd Qu.:14.000   3rd Qu.:4.000  
+##  Max.   :1499.0   Max.   :3.000   Max.   :29.000   Max.   :5.000  
+##  EducationField  EnvironmentSatisfaction     Gender        HourlyRate    
+##  Min.   :1.000   Min.   :1.000           Min.   :1.000   Min.   : 30.00  
+##  1st Qu.:2.000   1st Qu.:2.000           1st Qu.:1.000   1st Qu.: 48.00  
+##  Median :3.000   Median :3.000           Median :2.000   Median : 66.00  
+##  Mean   :3.243   Mean   :2.701           Mean   :1.593   Mean   : 65.61  
+##  3rd Qu.:4.000   3rd Qu.:4.000           3rd Qu.:2.000   3rd Qu.: 83.00  
+##  Max.   :6.000   Max.   :4.000           Max.   :2.000   Max.   :100.00  
+##  JobInvolvement     JobLevel        JobRole      JobSatisfaction MaritalStatus 
+##  Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :1.00  
+##  1st Qu.:2.000   1st Qu.:1.000   1st Qu.:3.000   1st Qu.:2.000   1st Qu.:1.00  
+##  Median :3.000   Median :2.000   Median :6.000   Median :3.000   Median :2.00  
+##  Mean   :2.723   Mean   :2.039   Mean   :5.534   Mean   :2.709   Mean   :1.91  
+##  3rd Qu.:3.000   3rd Qu.:3.000   3rd Qu.:8.000   3rd Qu.:4.000   3rd Qu.:2.00  
+##  Max.   :4.000   Max.   :5.000   Max.   :9.000   Max.   :4.000   Max.   :3.00  
+##  MonthlyIncome    MonthlyRate    NumCompaniesWorked    OverTime     
+##  Min.   : 1081   Min.   : 2094   Min.   :0.000      Min.   :0.0000  
+##  1st Qu.: 2840   1st Qu.: 8092   1st Qu.:1.000      1st Qu.:0.0000  
+##  Median : 4946   Median :14074   Median :2.000      Median :0.0000  
+##  Mean   : 6390   Mean   :14326   Mean   :2.728      Mean   :0.2897  
+##  3rd Qu.: 8182   3rd Qu.:20456   3rd Qu.:4.000      3rd Qu.:1.0000  
+##  Max.   :19999   Max.   :26997   Max.   :9.000      Max.   :1.0000  
+##  PercentSalaryHike PerformanceRating RelationshipSatisfaction StockOptionLevel
+##  Min.   :11.0      Min.   :3.000     Min.   :1.000            Min.   :0.0000  
+##  1st Qu.:12.0      1st Qu.:3.000     1st Qu.:2.000            1st Qu.:0.0000  
+##  Median :14.0      Median :3.000     Median :3.000            Median :1.0000  
+##  Mean   :15.2      Mean   :3.152     Mean   :2.707            Mean   :0.7839  
+##  3rd Qu.:18.0      3rd Qu.:3.000     3rd Qu.:4.000            3rd Qu.:1.0000  
+##  Max.   :25.0      Max.   :4.000     Max.   :4.000            Max.   :3.0000  
+##  TotalWorkingYears TrainingTimesLastYear WorkLifeBalance YearsAtCompany  
+##  Min.   : 0.00     Min.   :0.000         Min.   :1.000   Min.   : 0.000  
+##  1st Qu.: 6.00     1st Qu.:2.000         1st Qu.:2.000   1st Qu.: 3.000  
+##  Median :10.00     Median :3.000         Median :3.000   Median : 5.000  
+##  Mean   :11.05     Mean   :2.832         Mean   :2.782   Mean   : 6.962  
+##  3rd Qu.:15.00     3rd Qu.:3.000         3rd Qu.:3.000   3rd Qu.:10.000  
+##  Max.   :40.00     Max.   :6.000         Max.   :4.000   Max.   :40.000  
+##  YearsInCurrentRole YearsSinceLastPromotion YearsWithCurrManager
+##  Min.   : 0.000     Min.   : 0.000          Min.   : 0.00       
+##  1st Qu.: 2.000     1st Qu.: 0.000          1st Qu.: 2.00       
+##  Median : 3.000     Median : 1.000          Median : 3.00       
+##  Mean   : 4.205     Mean   : 2.169          Mean   : 4.14       
+##  3rd Qu.: 7.000     3rd Qu.: 3.000          3rd Qu.: 7.00       
+##  Max.   :18.000     Max.   :15.000          Max.   :17.00</code></pre>
+<p>We will use KNN to determine factors most influential to Attrition.
+We will create a correlation plot to demonstrate the variables with the
+highest correlations in the dataset.</p>
+<pre class="r"><code>#We will get a look at correlation across all variables in the dataset now. 
+Case2_A_corr &lt;- Case2_A %&gt;% select(-c(&quot;ID&quot;))
+corrplot(cor(Case2_A_corr))</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<pre class="r"><code>#Variables most influential in this dataset are: MonthlyIncome, Job Level, TotalWorkingYears, Performance Rating, PercentSalaryHike, YearsAtCompany
+
+#Key Relationships Identified
+#1. JobLevel correlated with MonthlyIncome and TotalWorkingYears
+#2. YearsAtCompany highly correlated to YearsInCurrentRole, YearsSinceLastPromotion, YearsWithCurrManager
+#3. Performance Rating is highly correlated to PercentSalaryHike</code></pre>
+<pre class="r"><code>#We can take a better look at variables most correlated to specific variables. We want to focus on key variables Attrition and MonthlyIncome
+#Top Correlated Variables for Attrition &amp; MonthlyIncome
+corr_var(Case2_A, Attrition, top=5)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<pre class="r"><code>corr_var(Case2_A, MonthlyIncome, top=5)</code></pre>
+<p><img src="casestudy2_files/figure-html/unnamed-chunk-24-2.png" width="672" /></p>
+<pre class="r"><code>#Attrition&#39;s 5 largest correlated variables: OverTime, JobInvolvement, MaritalStatus, TotalWorkingYears, JobInvolvement
+#MonthlyIncome&#39;s 5 largest correlated variables: JobLevel, TotalWorkingYears, JobRole, YearsAtCompany, YearsinCurrentRole</code></pre>
+<p>model &lt;- lm(Attrition ~
+Age+JobInvolvement+JobLevel+JobLevel+JobRole+MaritalStatus+MonthlyIncome+OverTime+PercentSalaryHike+PerformanceRating+TotalWorkingYears+YearsAtCompany+YearsInCurrentRole+YearsSinceLastPromotion+YearsWithCurrManager,
+data = Case2_A) # Summarize the model #summary(model)</p>
+<pre class="r"><code>###Now we will focus on creating models to predict attrition with the Frito-Lay dataset
+#First we will work on the Linear Regression Model 
+model &lt;- lm(Attrition  ~ Age+BusinessTravel+DailyRate+Department+DistanceFromHome+Education+EducationField+EnvironmentSatisfaction+Gender+HourlyRate+JobInvolvement+JobLevel+JobRole+MaritalStatus+MonthlyIncome+MonthlyRate+NumCompaniesWorked+OverTime+PercentSalaryHike+PerformanceRating+RelationshipSatisfaction+StockOptionLevel+TotalWorkingYears+TrainingTimesLastYear+WorkLifeBalance+YearsAtCompany+YearsInCurrentRole+YearsSinceLastPromotion+YearsWithCurrManager, data = Case2_A)</code></pre>
+<pre class="r"><code>#Naive Bayes of Case2Study full set
+iterations = 100
+
+masterAcc = matrix(nrow = iterations)
+masterSen = matrix(nrow = iterations)
+masterSpec = matrix(nrow = iterations)
+
+splitPerc = 0.7
+for(j in 1:iterations) {
+  
+  trainIndices = sample(seq(1:length(Case2_A$ID)), round(splitPerc *length(Case2_A$ID)))
+  train = Case2_A[trainIndices, ]
+  test = Case2_A[-trainIndices, ]
+  
+  model = naiveBayes(Attrition ~ Age + JobInvolvement + JobLevel 
+                     + JobRole + MaritalStatus + MonthlyIncome + OverTime 
+                    + PercentSalaryHike + PerformanceRating 
+                    + TotalWorkingYears + YearsAtCompany + YearsInCurrentRole 
+                    + YearsSinceLastPromotion + YearsWithCurrManager, 
+                    data = train, laplace = 1)
+  
+  table(predict(model, test), test$Attrition)
+  
+  CM = confusionMatrix(table(predict(model, test), test$Attrition))
+  masterAcc[j] = CM$overall[1]
+  masterSen[j] = CM$byClass[1]
+  masterSpec[j] = CM$byClass[2]
+}
+CM</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##    
+##       0   1
+##   0 179  27
+##   1  28  27
+##                                           
+##                Accuracy : 0.7893          
+##                  95% CI : (0.7347, 0.8371)
+##     No Information Rate : 0.7931          
+##     P-Value [Acc &gt; NIR] : 0.5961          
+##                                           
+##                   Kappa : 0.3623          
+##                                           
+##  Mcnemar&#39;s Test P-Value : 1.0000          
+##                                           
+##             Sensitivity : 0.8647          
+##             Specificity : 0.5000          
+##          Pos Pred Value : 0.8689          
+##          Neg Pred Value : 0.4909          
+##              Prevalence : 0.7931          
+##          Detection Rate : 0.6858          
+##    Detection Prevalence : 0.7893          
+##       Balanced Accuracy : 0.6824          
+##                                           
+##        &#39;Positive&#39; Class : 0               
+## </code></pre>
+<pre class="r"><code>MeanAcc = colMeans(masterAcc)
+MeanAcc</code></pre>
+<pre><code>## [1] 0.8060536</code></pre>
+<pre class="r"><code>MeanSen = colMeans(masterSen)
+MeanSen</code></pre>
+<pre><code>## [1] 0.8585157</code></pre>
+<pre class="r"><code>MeanSpec = colMeans(masterSpec)
+MeanSpec</code></pre>
+<pre><code>## [1] 0.5297262</code></pre>
+<pre class="r"><code>#Accuracy and sensitivity are ideal but specificity is not high enought to be considered a good fit for this dataset.</code></pre>
+<pre class="r"><code>#Down Sampling - Attrition
+#Before we make a downsampling model, we will make a new column for downsampling attrition before throwing it into a Naive Bayes Model.
+
+#Columns for Observations with and without Attrition
+Case2_A_A_Yes = which(Case2_A$Attrition==&quot;1&quot;)
+Case2_A_A_No = which(Case2_A$Attrition==&quot;0&quot;)
+
+#Checking Column Lengths (140 Yeses and 140 No&#39;s)
+length(Case2_A_A_Yes)</code></pre>
+<pre><code>## [1] 140</code></pre>
+<pre class="r"><code>length(Case2_A_A_No)</code></pre>
+<pre><code>## [1] 730</code></pre>
+<pre class="r"><code>#Down sample 
+Case2_A_DS_No= sample(Case2_A_A_No,length(Case2_A_A_Yes))
+Case2_A_DS=Case2_A[c(Case2_A_DS_No,Case2_A_A_Yes),]
+
+view(Case2_A_DS)
+nrow(filter(Case2_A_DS, Attrition == 1))</code></pre>
+<pre><code>## [1] 140</code></pre>
+<pre class="r"><code>nrow(filter(Case2_A_DS, Attrition == 0))</code></pre>
+<pre><code>## [1] 140</code></pre>
+<pre class="r"><code>#Naive Bayes Down Sampling Model
+iterations = 100
+masterAcc = matrix(nrow = iterations)
+masterSen = matrix(nrow = iterations)
+masterSpec = matrix(nrow = iterations)
+splitPerc = 0.7 
+for(j in 1:iterations) {
+  
+  trainIndices = sample(seq(1:length(Case2_A_DS$ID)), round(splitPerc *length(Case2_A_DS$ID)))
+  train = Case2_A_DS[trainIndices, ]
+  test = Case2_A_DS[-trainIndices, ]
+  
+  model = naiveBayes(Attrition ~ Age + JobInvolvement + JobLevel
+                     + JobRole + MaritalStatus + MonthlyIncome + OverTime 
+                    + PercentSalaryHike + PerformanceRating + TotalWorkingYears 
+                    + YearsAtCompany + YearsInCurrentRole + YearsSinceLastPromotion 
+                    + YearsWithCurrManager, data = train, laplace = 1)
+  
+  table(predict(model, test), test$Attrition)
+  
+  CM = confusionMatrix(table(predict(model, test), test$Attrition))
+  masterAcc[j] = CM$overall[1]
+  masterSen[j] = CM$byClass[1]
+  masterSpec[j] = CM$byClass[2]
+}
+
+CM</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##    
+##      0  1
+##   0 23  8
+##   1 14 39
+##                                          
+##                Accuracy : 0.7381         
+##                  95% CI : (0.6307, 0.828)
+##     No Information Rate : 0.5595         
+##     P-Value [Acc &gt; NIR] : 0.0005538      
+##                                          
+##                   Kappa : 0.4593         
+##                                          
+##  Mcnemar&#39;s Test P-Value : 0.2864220      
+##                                          
+##             Sensitivity : 0.6216         
+##             Specificity : 0.8298         
+##          Pos Pred Value : 0.7419         
+##          Neg Pred Value : 0.7358         
+##              Prevalence : 0.4405         
+##          Detection Rate : 0.2738         
+##    Detection Prevalence : 0.3690         
+##       Balanced Accuracy : 0.7257         
+##                                          
+##        &#39;Positive&#39; Class : 0              
+## </code></pre>
+<pre class="r"><code>#Mean Accuracy
+MeanAcc = colMeans(masterAcc)
+MeanAcc</code></pre>
+<pre><code>## [1] 0.6739286</code></pre>
+<pre class="r"><code>#Mean Sensitivity
+MeanSen = colMeans(masterSen)
+MeanSen</code></pre>
+<pre><code>## [1] 0.5736426</code></pre>
+<pre class="r"><code>#Mean Specificity
+MeanSpec = colMeans(masterSpec)
+MeanSpec</code></pre>
+<pre><code>## [1] 0.7746273</code></pre>
+<pre class="r"><code>#While accuracy isn&#39;t as high as before, sensitivity and specificity meet the condition of having values &gt; 60%. Lets see if Upsampling will return even better results.</code></pre>
+<pre class="r"><code>#Up Sampling - Attrition
+##Up Sampling of Attrition (There are 730 Yeses and 730 Nos)
+Case2_A_US_Yes= sample(Case2_A_A_Yes,length(Case2_A_A_No), replace = TRUE)
+length(Case2_A_US_Yes)</code></pre>
+<pre><code>## [1] 730</code></pre>
+<pre class="r"><code>Case2_A_US=Case2_A[c(Case2_A_US_Yes,Case2_A_A_No),]
+
+view(Case2_A_US)
+nrow(filter(Case2_A_US, Attrition == 1))</code></pre>
+<pre><code>## [1] 730</code></pre>
+<pre class="r"><code>nrow(filter(Case2_A_US, Attrition == 0))</code></pre>
+<pre><code>## [1] 730</code></pre>
+<pre class="r"><code>#Naive Bayes Up Sample
+iterations = 100
+masterAcc = matrix(nrow = iterations)
+masterSen = matrix(nrow = iterations)
+masterSpec = matrix(nrow = iterations)
+splitPerc = 0.7 
+
+for(j in 1:iterations) {
+  
+  trainIndices = sample(seq(1:length(Case2_A_US$ID)), round(splitPerc * length(Case2_A_US$ID)))
+  train = Case2_A_US[trainIndices, ]
+  test = Case2_A_US[-trainIndices, ]
+  
+  model = naiveBayes(Attrition ~ Age + JobInvolvement + JobLevel
+                     + JobRole + MaritalStatus + MonthlyIncome + OverTime 
+                    + PercentSalaryHike + PerformanceRating 
+                    + TotalWorkingYears + YearsAtCompany + YearsInCurrentRole 
+                    + YearsSinceLastPromotion + YearsWithCurrManager, 
+                    data = train, laplace = 1)
+  
+  table(predict(model, test), test$Attrition)
+  
+  CM = confusionMatrix(table(predict(model, test), test$Attrition))
+  masterAcc[j] = CM$overall[1]
+  masterSen[j] = CM$byClass[1]
+  masterSpec[j] = CM$byClass[2]
+}
+#Confusion Matrix
+CM</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##    
+##       0   1
+##   0 149  55
+##   1  76 158
+##                                           
+##                Accuracy : 0.7009          
+##                  95% CI : (0.6556, 0.7435)
+##     No Information Rate : 0.5137          
+##     P-Value [Acc &gt; NIR] : 1.256e-15       
+##                                           
+##                   Kappa : 0.4029          
+##                                           
+##  Mcnemar&#39;s Test P-Value : 0.08057         
+##                                           
+##             Sensitivity : 0.6622          
+##             Specificity : 0.7418          
+##          Pos Pred Value : 0.7304          
+##          Neg Pred Value : 0.6752          
+##              Prevalence : 0.5137          
+##          Detection Rate : 0.3402          
+##    Detection Prevalence : 0.4658          
+##       Balanced Accuracy : 0.7020          
+##                                           
+##        &#39;Positive&#39; Class : 0               
+## </code></pre>
+<pre class="r"><code>#Mean Accuracy
+MeanAcc = colMeans(masterAcc)
+MeanAcc</code></pre>
+<pre><code>## [1] 0.701621</code></pre>
+<pre class="r"><code>#Mean Sensitivity
+MeanSen = colMeans(masterSen)
+MeanSen</code></pre>
+<pre><code>## [1] 0.6449508</code></pre>
+<pre class="r"><code>#Mean Specificity
+MeanSpec = colMeans(masterSpec)
+MeanSpec</code></pre>
+<pre><code>## [1] 0.7583322</code></pre>
+<pre class="r"><code>#Specificity in the Upsample falls below the threshold we are looking for. We will use down sample model to conduct predictions for attrition and monthly income.</code></pre>
+<pre class="r"><code>#Before we use the Down Sample model to predict attrition, we will need to make all CaseStudy No Attrition variables numeric as we did for CaseStudy2 dataset.
+
+#Levels (alphabetical)
+Case2_NA_A &lt;- Case2_NA
+view(Case2_NA_A)
+
+Case2_NA_A &lt;- Case2_NA_A %&gt;% select(-c(&quot;Over18&quot;, &quot;EmployeeCount&quot;, &quot;StandardHours&quot;, &quot;EmployeeNumber&quot;))
+
+Case2_NA_A$BusinessTravel &lt;- factor(ifelse(Case2_NA$BusinessTravel == &quot;Non-Travel&quot;, 1,
+                      ifelse(Case2_NA$BusinessTravel == &quot;Travel_Rarely&quot;, 2,
+                          ifelse(Case2_NA$BusinessTravel == &quot;Travel_Frequently&quot;, 3, &quot;NA&quot;))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;NA&quot;))
+
+Case2_NA_A$Department &lt;- factor(ifelse(Case2_NA$Department == &quot;Human Resources&quot;, 1,
+                      ifelse(Case2_NA$Department == &quot;Research &amp; Development&quot;, 2,
+                          ifelse(Case2_NA$Department == &quot;Sales&quot;, 3, &quot;NA&quot;))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;NA&quot;))
+
+Case2_NA_A$EducationField &lt;- factor(ifelse(Case2_NA$EducationField == &quot;Human Resources&quot;, 1,
+                    ifelse(Case2_NA$EducationField == &quot;Life Sciences&quot;, 2,
+                          ifelse(Case2_NA$EducationField == &quot;Marketing&quot;, 3, 
+                             ifelse(Case2_NA$EducationField == &quot;Medical&quot;, 4,
+                                    ifelse(Case2_NA$EducationField == &quot;Other&quot;, 5,
+                                          ifelse(Case2_NA$EducationField == &quot;Technical Degree&quot;, 6, &quot;NA&quot;)))))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;NA&quot;))
+                                               
+Case2_NA_A$Gender &lt;- ifelse(Case2_NA$Gender == &quot;Female&quot;, 1, 2)
+
+Case2_NA_A$JobRole &lt;- factor(ifelse(Case2_NA$JobRole == &quot;Healthcare Representative&quot;, 1,
+                          ifelse(Case2_NA$JobRole == &quot;Human Resources&quot;, 2, 
+                             ifelse(Case2_NA$JobRole == &quot;Laboratory Technician&quot;, 3,
+                                    ifelse(Case2_NA$JobRole == &quot;Manager&quot;, 4,
+                                          ifelse(Case2_NA$JobRole == &quot;Manufacturing Director&quot;, 5, 
+                                                 ifelse(Case2_NA$JobRole == &quot;Research Director&quot;, 6,
+                                                        ifelse(Case2_NA$JobRole == &quot;Research Scientist&quot;, 7,
+                                                               ifelse(Case2_NA$JobRole == &quot;Sales Executive&quot;, 8,
+                                                                      ifelse(Case2_NA$JobRole == &quot;Sales Representative&quot;, 9, &quot;NA&quot;))))))))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;,&quot;6&quot;,&quot;7&quot;,&quot;8&quot;,&quot;9&quot;,&quot;NA&quot;))
+
+Case2_NA_A$MaritalStatus &lt;- factor(ifelse(Case2_NA$MaritalStatus == &quot;Single&quot;, 1,
+                      ifelse(Case2_NA$MaritalStatus == &quot;Married&quot;, 2,
+                          ifelse(Case2_NA$MaritalStatus == &quot;Divorced&quot;, 3, &quot;NA&quot;))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;NA&quot;))
+
+Case2_NA_A$OverTime &lt;- ifelse(Case2_NA$OverTime == &quot;Yes&quot;, 1, 0)
+view(Case2_NA_A)
+
+
+Case2_NA_A$BusinessTravel &lt;- as.numeric(Case2_NA_A$BusinessTravel)
+Case2_NA_A$Department &lt;- as.numeric(Case2_NA_A$Department)
+Case2_NA_A$EducationField &lt;- as.numeric(Case2_NA_A$EducationField)
+Case2_NA_A$Gender &lt;- as.numeric(Case2_NA_A$Gender)
+Case2_NA_A$JobRole &lt;- as.numeric(Case2_NA_A$JobRole)
+Case2_NA_A$MaritalStatus &lt;- as.numeric(Case2_NA_A$MaritalStatus)
+Case2_NA_A$OverTime &lt;- as.numeric(Case2_NA_A$OverTime)
+
+Case2_NA_A$ID &lt;- as.numeric(Case2_NA_A$ID)
+Case2_NA_A$Age &lt;- as.numeric(Case2_NA_A$Age)
+Case2_NA_A$DailyRate &lt;- as.numeric(Case2_NA_A$DailyRate)
+Case2_NA_A$DistanceFromHome &lt;- as.numeric(Case2_NA_A$DistanceFromHome)
+Case2_NA_A$Education &lt;- as.numeric(Case2_NA_A$Education)
+Case2_NA_A$EnvironmentSatisfaction &lt;- as.numeric(Case2_NA_A$EnvironmentSatisfaction)
+Case2_NA_A$HourlyRate &lt;- as.numeric(Case2_NA_A$HourlyRate)
+Case2_NA_A$JobInvolvement &lt;- as.numeric(Case2_NA_A$JobInvolvement)
+Case2_NA_A$JobLevel &lt;- as.numeric(Case2_NA_A$JobLevel)
+Case2_NA_A$JobSatisfaction &lt;- as.numeric(Case2_NA_A$JobSatisfaction)
+Case2_NA_A$MonthlyIncome &lt;- as.numeric(Case2_NA_A$MonthlyIncome)
+Case2_NA_A$MonthlyRate &lt;- as.numeric(Case2_NA_A$MonthlyRate)
+Case2_NA_A$NumCompaniesWorked &lt;- as.numeric(Case2_NA_A$NumCompaniesWorked)
+Case2_NA_A$PercentSalaryHike &lt;- as.numeric(Case2_NA_A$PercentSalaryHike)
+Case2_NA_A$PerformanceRating &lt;- as.numeric(Case2_NA_A$PerformanceRating)
+Case2_NA_A$RelationshipSatisfaction &lt;- as.numeric(Case2_NA_A$RelationshipSatisfaction)
+Case2_NA_A$StockOptionLevel &lt;- as.numeric(Case2_NA_A$StockOptionLevel)
+Case2_NA_A$TotalWorkingYears &lt;- as.numeric(Case2_NA_A$TotalWorkingYears)
+Case2_NA_A$TrainingTimesLastYear &lt;- as.numeric(Case2_NA_A$TrainingTimesLastYear)
+Case2_NA_A$WorkLifeBalance &lt;- as.numeric(Case2_NA_A$WorkLifeBalance)
+Case2_NA_A$YearsAtCompany &lt;- as.numeric(Case2_NA_A$YearsAtCompany)
+Case2_NA_A$YearsInCurrentRole &lt;- as.numeric(Case2_NA_A$YearsInCurrentRole)
+Case2_NA_A$YearsSinceLastPromotion &lt;- as.numeric(Case2_NA_A$YearsSinceLastPromotion)
+Case2_NA_A$YearsWithCurrManager &lt;- as.numeric(Case2_NA_A$YearsWithCurrManager)
+
+missing &lt;- sapply(Case2_NA_A, function(x) sum(is.na(x)))
+sum(missing)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>summary(Case2_NA_A)</code></pre>
+<pre><code>##        ID            Age        BusinessTravel    DailyRate        Department  
+##  Min.   :1171   Min.   :19.00   Min.   :1.000   Min.   : 102.0   Min.   :1.00  
+##  1st Qu.:1246   1st Qu.:31.00   1st Qu.:2.000   1st Qu.: 448.0   1st Qu.:2.00  
+##  Median :1320   Median :36.00   Median :2.000   Median : 775.0   Median :2.00  
+##  Mean   :1320   Mean   :37.86   Mean   :2.083   Mean   : 784.8   Mean   :2.23  
+##  3rd Qu.:1395   3rd Qu.:44.00   3rd Qu.:2.000   3rd Qu.:1117.0   3rd Qu.:3.00  
+##  Max.   :1470   Max.   :60.00   Max.   :3.000   Max.   :1490.0   Max.   :3.00  
+##  DistanceFromHome   Education     EducationField  EnvironmentSatisfaction
+##  Min.   : 1.00    Min.   :1.000   Min.   :1.000   Min.   :1.000          
+##  1st Qu.: 2.00    1st Qu.:2.000   1st Qu.:2.000   1st Qu.:2.000          
+##  Median : 7.00    Median :3.000   Median :3.000   Median :3.000          
+##  Mean   : 9.26    Mean   :2.973   Mean   :3.213   Mean   :2.733          
+##  3rd Qu.:14.00    3rd Qu.:4.000   3rd Qu.:4.000   3rd Qu.:4.000          
+##  Max.   :29.00    Max.   :5.000   Max.   :6.000   Max.   :4.000          
+##      Gender       HourlyRate     JobInvolvement     JobLevel      JobRole    
+##  Min.   :1.00   Min.   : 30.00   Min.   :1.000   Min.   :1.0   Min.   :1.00  
+##  1st Qu.:1.00   1st Qu.: 50.00   1st Qu.:2.000   1st Qu.:1.0   1st Qu.:3.00  
+##  Median :2.00   Median : 66.00   Median :3.000   Median :2.0   Median :5.00  
+##  Mean   :1.65   Mean   : 66.07   Mean   :2.743   Mean   :2.2   Mean   :5.25  
+##  3rd Qu.:2.00   3rd Qu.: 83.00   3rd Qu.:3.000   3rd Qu.:3.0   3rd Qu.:7.00  
+##  Max.   :2.00   Max.   :100.00   Max.   :4.000   Max.   :5.0   Max.   :9.00  
+##  JobSatisfaction MaritalStatus  MonthlyIncome    MonthlyRate   
+##  Min.   :1.000   Min.   :1.00   Min.   : 1232   Min.   : 2097  
+##  1st Qu.:2.000   1st Qu.:1.00   1st Qu.: 3034   1st Qu.: 8420  
+##  Median :3.000   Median :2.00   Median : 5208   Median :15091  
+##  Mean   :2.767   Mean   :1.86   Mean   : 7103   Mean   :14499  
+##  3rd Qu.:4.000   3rd Qu.:2.00   3rd Qu.: 9750   3rd Qu.:20330  
+##  Max.   :4.000   Max.   :3.00   Max.   :19973   Max.   :26914  
+##  NumCompaniesWorked    OverTime      PercentSalaryHike PerformanceRating
+##  Min.   :0.000      Min.   :0.0000   Min.   :11.00     Min.   :3.000    
+##  1st Qu.:1.000      1st Qu.:0.0000   1st Qu.:12.00     1st Qu.:3.000    
+##  Median :2.000      Median :0.0000   Median :14.00     Median :3.000    
+##  Mean   :2.547      Mean   :0.2933   Mean   :15.17     Mean   :3.153    
+##  3rd Qu.:4.000      3rd Qu.:1.0000   3rd Qu.:18.00     3rd Qu.:3.000    
+##  Max.   :9.000      Max.   :1.0000   Max.   :25.00     Max.   :4.000    
+##  RelationshipSatisfaction StockOptionLevel TotalWorkingYears
+##  Min.   :1.000            Min.   :0.0000   Min.   : 0.00    
+##  1st Qu.:2.000            1st Qu.:0.0000   1st Qu.: 6.00    
+##  Median :3.000            Median :1.0000   Median :10.00    
+##  Mean   :2.803            Mean   :0.7833   Mean   :12.44    
+##  3rd Qu.:4.000            3rd Qu.:1.0000   3rd Qu.:18.00    
+##  Max.   :4.000            Max.   :3.0000   Max.   :38.00    
+##  TrainingTimesLastYear WorkLifeBalance YearsAtCompany   YearsInCurrentRole
+##  Min.   :0.000         Min.   :1.000   Min.   : 0.000   Min.   : 0.00     
+##  1st Qu.:2.000         1st Qu.:2.000   1st Qu.: 3.000   1st Qu.: 2.00     
+##  Median :2.000         Median :3.000   Median : 5.000   Median : 3.00     
+##  Mean   :2.683         Mean   :2.747   Mean   : 7.527   Mean   : 4.33     
+##  3rd Qu.:3.000         3rd Qu.:3.000   3rd Qu.:10.000   3rd Qu.: 7.00     
+##  Max.   :6.000         Max.   :4.000   Max.   :37.000   Max.   :18.00     
+##  YearsSinceLastPromotion YearsWithCurrManager
+##  Min.   : 0.00           Min.   : 0.00       
+##  1st Qu.: 0.00           1st Qu.: 2.00       
+##  Median : 1.00           Median : 3.00       
+##  Mean   : 2.29           Mean   : 4.38       
+##  3rd Qu.: 3.00           3rd Qu.: 7.00       
+##  Max.   :15.00           Max.   :17.00</code></pre>
+<pre class="r"><code>#Now we will use the most successful model, the Down Sampling model, to predict attrition using a small dataset of 300 employees without attrition values.
+model_D &lt;- naiveBayes(Attrition ~ Age + JobInvolvement + JobLevel 
+                     + JobRole + MaritalStatus + MonthlyIncome + OverTime 
+                    + PercentSalaryHike + PerformanceRating 
+                    + TotalWorkingYears + YearsAtCompany + YearsInCurrentRole 
+                    + YearsSinceLastPromotion + YearsWithCurrManager, 
+                    data = Case2_A_DS, laplace = 1)
+
+#Now we can run the down sample model on the dataset for prediction. This will produce a new dataset of predictions for attrition.
+Case2_A_A_P &lt;- data.frame(ID = Case2_NA_A$ID, Predict_Attrition = predict(model_D, newdata = Case2_NA_A))
+view(Case2_A_A_P)</code></pre>
+<pre class="r"><code>Case2_A$Attrition &lt;- ifelse(Case2$Attrition == &quot;Yes&quot;, 1, 0)
+
+Case2_A$BusinessTravel &lt;- factor(ifelse(Case2$BusinessTravel == &quot;Non-Travel&quot;, 1,
+                      ifelse(Case2$BusinessTravel == &quot;Travel_Rarely&quot;, 2,
+                          ifelse(Case2$BusinessTravel == &quot;Travel_Frequently&quot;, 3, &quot;NA&quot;))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;NA&quot;))
+
+Case2_A$Department &lt;- factor(ifelse(Case2$Department == &quot;Human Resources&quot;, 1,
+                      ifelse(Case2$Department == &quot;Research &amp; Development&quot;, 2,
+                          ifelse(Case2$Department == &quot;Sales&quot;, 3, &quot;NA&quot;))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;NA&quot;))
+
+Case2_A$EducationField &lt;- factor(ifelse(Case2$EducationField == &quot;Human Resources&quot;, 1,
+                    ifelse(Case2$EducationField == &quot;Life Sciences&quot;, 2,
+                          ifelse(Case2$EducationField == &quot;Marketing&quot;, 3, 
+                             ifelse(Case2$EducationField == &quot;Medical&quot;, 4,
+                                    ifelse(Case2$EducationField == &quot;Other&quot;, 5,
+                                          ifelse(Case2$EducationField == &quot;Technical Degree&quot;, 6, &quot;NA&quot;)))))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;NA&quot;))
+                                               
+Case2_A$Gender &lt;- ifelse(Case2$Gender == &quot;Female&quot;, 1, 2)
+
+Case2_A$JobRole &lt;- factor(ifelse(Case2$JobRole == &quot;Healthcare Representative&quot;, 1,
+                          ifelse(Case2$JobRole == &quot;Human Resources&quot;, 2, 
+                             ifelse(Case2$JobRole == &quot;Laboratory Technician&quot;, 3,
+                                    ifelse(Case2$JobRole == &quot;Manager&quot;, 4,
+                                          ifelse(Case2$JobRole == &quot;Manufacturing Director&quot;, 5, 
+                                                 ifelse(Case2$JobRole == &quot;Research Director&quot;, 6,
+                                                        ifelse(Case2$JobRole == &quot;Research Scientist&quot;, 7,
+                                                               ifelse(Case2$JobRole == &quot;Sales Executive&quot;, 8,
+                                                                      ifelse(Case2$JobRole == &quot;Sales Representative&quot;, 9, &quot;NA&quot;))))))))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;,&quot;6&quot;,&quot;7&quot;,&quot;8&quot;,&quot;9&quot;,&quot;NA&quot;))
+
+Case2_A$MaritalStatus &lt;- factor(ifelse(Case2$MaritalStatus == &quot;Single&quot;, 1,
+                      ifelse(Case2$MaritalStatus == &quot;Married&quot;, 2,
+                          ifelse(Case2$MaritalStatus == &quot;Divorced&quot;, 3, &quot;NA&quot;))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;NA&quot;))
+
+Case2_A$OverTime &lt;- ifelse(Case2$OverTime == &quot;Yes&quot;, 1, 0)
+view(Case2_A)
+
+
+Case2_A$Attrition &lt;- as.numeric(Case2_A$Attrition)
+Case2_A$BusinessTravel &lt;- as.numeric(Case2_A$BusinessTravel)
+Case2_A$Department &lt;- as.numeric(Case2_A$Department)
+Case2_A$EducationField &lt;- as.numeric(Case2_A$EducationField)
+Case2_A$Gender &lt;- as.numeric(Case2_A$Gender)
+Case2_A$JobRole &lt;- as.numeric(Case2_A$JobRole)
+Case2_A$MaritalStatus &lt;- as.numeric(Case2_A$MaritalStatus)
+Case2_A$OverTime &lt;- as.numeric(Case2_A$OverTime)
+Case2_A$ID &lt;- as.numeric(Case2_A$ID)
+Case2_A$Age &lt;- as.numeric(Case2_A$Age)
+Case2_A$DailyRate &lt;- as.numeric(Case2_A$DailyRate)
+Case2_A$DistanceFromHome &lt;- as.numeric(Case2_A$DistanceFromHome)
+Case2_A$Education &lt;- as.numeric(Case2_A$Education)
+Case2_A$EnvironmentSatisfaction &lt;- as.numeric(Case2_A$EnvironmentSatisfaction)
+Case2_A$HourlyRate &lt;- as.numeric(Case2_A$HourlyRate)
+Case2_A$JobInvolvement &lt;- as.numeric(Case2_A$JobInvolvement)
+Case2_A$JobLevel &lt;- as.numeric(Case2_A$JobLevel)
+Case2_A$JobSatisfaction &lt;- as.numeric(Case2_A$JobSatisfaction)
+Case2_A$MonthlyIncome &lt;- as.numeric(Case2_A$MonthlyIncome)
+Case2_A$MonthlyRate &lt;- as.numeric(Case2_A$MonthlyRate)
+Case2_A$NumCompaniesWorked &lt;- as.numeric(Case2_A$NumCompaniesWorked)
+Case2_A$PercentSalaryHike &lt;- as.numeric(Case2_A$PercentSalaryHike)
+Case2_A$PerformanceRating &lt;- as.numeric(Case2_A$PerformanceRating)
+Case2_A$RelationshipSatisfaction &lt;- as.numeric(Case2_A$RelationshipSatisfaction)
+Case2_A$StockOptionLevel &lt;- as.numeric(Case2_A$StockOptionLevel)
+Case2_A$TotalWorkingYears &lt;- as.numeric(Case2_A$TotalWorkingYears)
+Case2_A$TrainingTimesLastYear &lt;- as.numeric(Case2_A$TrainingTimesLastYear)
+Case2_A$WorkLifeBalance &lt;- as.numeric(Case2_A$WorkLifeBalance)
+Case2_A$YearsAtCompany &lt;- as.numeric(Case2_A$YearsAtCompany)
+Case2_A$YearsInCurrentRole &lt;- as.numeric(Case2_A$YearsInCurrentRole)
+Case2_A$YearsSinceLastPromotion &lt;- as.numeric(Case2_A$YearsSinceLastPromotion)
+Case2_A$YearsWithCurrManager &lt;- as.numeric(Case2_A$YearsWithCurrManager)
+
+#Let&#39;s check the MSPE 
+
+splitPerc = .7
+MSPE_Number = 100
+
+MSPE_Model_A = numeric(MSPE_Number)
+MSPE_Model_B = numeric(MSPE_Number)
+
+for (i in 1:MSPE_Number)
+{
+  trainIndices_MSPE = sample(seq(1,dim(Case2)[1]),round(.7*dim(Case2)[1]),replace = FALSE)
+  train_MSPE = Case2[trainIndices_MSPE,]
+  test_MSPE = Case2[-trainIndices_MSPE,]
+  
+  MSPE_Model_A = lm(MonthlyIncome ~ Age + JobInvolvement + JobLevel + JobLevel 
+                     + JobRole + MaritalStatus + OverTime 
+                    + PercentSalaryHike + PerformanceRating 
+                    + TotalWorkingYears + YearsAtCompany + YearsInCurrentRole 
+                    + YearsSinceLastPromotion + YearsWithCurrManager, data = train_MSPE)
+  
+  Predictions_Model_A = predict(MSPE_Model_A, newdata = test_MSPE)
+
+  #Model A Calculations
+  MSPE = mean((test_MSPE$MonthlyIncome - Predictions_Model_A)^2) #We used MSPE formula
+  
+  #Add MSPE_A value to previously created Model A
+  MSPE_Model_A[i] = MSPE
+  
+  #Model B - Using top 5 variables highly correlated to MonthlyIncome
+  MSPE_Model_B = lm(MonthlyIncome ~ Age + JobLevel + TotalWorkingYears 
+                    + YearsAtCompany + YearsInCurrentRole, data = train_MSPE)
+  Predictions_Model_B = predict(MSPE_Model_B, newdata = test_MSPE)
+  
+  
+  #Model B Calculations
+  MSPE = mean((test_MSPE$MonthlyIncome - Predictions_Model_B)^2) #We used MSPE formula for Model B
+  
+  #Add MSPE_B value to previously created Model B 
+  MSPE_Model_B[i] = MSPE
+  
+}
+view(Predictions_Model_A)
+view(test_MSPE)
+str(Predictions_Model_B)</code></pre>
+<pre><code>##  Named num [1:261] 6084 9951 1971 2093 2400 ...
+##  - attr(*, &quot;names&quot;)= chr [1:261] &quot;1&quot; &quot;3&quot; &quot;9&quot; &quot;12&quot; ...</code></pre>
+<pre class="r"><code>view(Predictions_Model_B)
+str(MSPE_Model_B)</code></pre>
+<pre><code>## List of 100
+##  $ coefficients  : Named num [1:6] -1579.21 -4.48 3663.37 77.47 -21.01 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:6] &quot;(Intercept)&quot; &quot;Age&quot; &quot;JobLevel&quot; &quot;TotalWorkingYears&quot; ...
+##  $ residuals     : Named num [1:609] -2509 873 -552 -328 587 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:609] &quot;740&quot; &quot;578&quot; &quot;481&quot; &quot;758&quot; ...
+##  $ effects       : Named num [1:609] -155400 -51992 -89185 -5861 -3196 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:609] &quot;(Intercept)&quot; &quot;Age&quot; &quot;JobLevel&quot; &quot;TotalWorkingYears&quot; ...
+##  $ rank          : int 6
+##  $ fitted.values : Named num [1:609] 6190 2289 5925 6979 2023 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:609] &quot;740&quot; &quot;578&quot; &quot;481&quot; &quot;758&quot; ...
+##  $ assign        : int [1:6] 0 1 2 3 4 5
+##  $ qr            :List of 5
+##   ..$ qr   : num [1:609, 1:6] -24.6779 0.0405 0.0405 0.0405 0.0405 ...
+##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. ..$ : chr [1:609] &quot;740&quot; &quot;578&quot; &quot;481&quot; &quot;758&quot; ...
+##   .. .. ..$ : chr [1:6] &quot;(Intercept)&quot; &quot;Age&quot; &quot;JobLevel&quot; &quot;TotalWorkingYears&quot; ...
+##   .. ..- attr(*, &quot;assign&quot;)= int [1:6] 0 1 2 3 4 5
+##   ..$ qraux: num [1:6] 1.04 1.03 1.02 1.06 1 ...
+##   ..$ pivot: int [1:6] 1 2 3 4 5 6
+##   ..$ tol  : num 1e-07
+##   ..$ rank : int 6
+##   ..- attr(*, &quot;class&quot;)= chr &quot;qr&quot;
+##  $ df.residual   : int 603
+##  $ xlevels       : Named list()
+##  $ call          : language lm(formula = MonthlyIncome ~ Age + JobLevel + TotalWorkingYears + YearsAtCompany +      YearsInCurrentRole, data = train_MSPE)
+##  $ terms         :Classes &#39;terms&#39;, &#39;formula&#39;  language MonthlyIncome ~ Age + JobLevel + TotalWorkingYears + YearsAtCompany + YearsInCurrentRole
+##   .. ..- attr(*, &quot;variables&quot;)= language list(MonthlyIncome, Age, JobLevel, TotalWorkingYears, YearsAtCompany, YearsInCurrentRole)
+##   .. ..- attr(*, &quot;factors&quot;)= int [1:6, 1:5] 0 1 0 0 0 0 0 0 1 0 ...
+##   .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. .. ..$ : chr [1:6] &quot;MonthlyIncome&quot; &quot;Age&quot; &quot;JobLevel&quot; &quot;TotalWorkingYears&quot; ...
+##   .. .. .. ..$ : chr [1:5] &quot;Age&quot; &quot;JobLevel&quot; &quot;TotalWorkingYears&quot; &quot;YearsAtCompany&quot; ...
+##   .. ..- attr(*, &quot;term.labels&quot;)= chr [1:5] &quot;Age&quot; &quot;JobLevel&quot; &quot;TotalWorkingYears&quot; &quot;YearsAtCompany&quot; ...
+##   .. ..- attr(*, &quot;order&quot;)= int [1:5] 1 1 1 1 1
+##   .. ..- attr(*, &quot;intercept&quot;)= int 1
+##   .. ..- attr(*, &quot;response&quot;)= int 1
+##   .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: R_GlobalEnv&gt; 
+##   .. ..- attr(*, &quot;predvars&quot;)= language list(MonthlyIncome, Age, JobLevel, TotalWorkingYears, YearsAtCompany, YearsInCurrentRole)
+##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:6] &quot;numeric&quot; &quot;numeric&quot; &quot;numeric&quot; &quot;numeric&quot; ...
+##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:6] &quot;MonthlyIncome&quot; &quot;Age&quot; &quot;JobLevel&quot; &quot;TotalWorkingYears&quot; ...
+##  $ model         :&#39;data.frame&#39;:  609 obs. of  6 variables:
+##   ..$ MonthlyIncome     : int [1:609] 3681 3162 5373 6651 2610 2168 4771 2455 5878 4069 ...
+##   ..$ Age               : int [1:609] 35 44 29 49 31 29 38 43 32 40 ...
+##   ..$ JobLevel          : int [1:609] 2 1 2 2 1 1 1 1 2 2 ...
+##   ..$ TotalWorkingYears : int [1:609] 9 7 6 20 2 6 10 9 12 8 ...
+##   ..$ YearsAtCompany    : int [1:609] 3 5 5 3 2 5 5 8 7 2 ...
+##   ..$ YearsInCurrentRole: int [1:609] 2 2 3 2 2 4 2 7 1 2 ...
+##   ..- attr(*, &quot;terms&quot;)=Classes &#39;terms&#39;, &#39;formula&#39;  language MonthlyIncome ~ Age + JobLevel + TotalWorkingYears + YearsAtCompany + YearsInCurrentRole
+##   .. .. ..- attr(*, &quot;variables&quot;)= language list(MonthlyIncome, Age, JobLevel, TotalWorkingYears, YearsAtCompany, YearsInCurrentRole)
+##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:6, 1:5] 0 1 0 0 0 0 0 0 1 0 ...
+##   .. .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. .. .. ..$ : chr [1:6] &quot;MonthlyIncome&quot; &quot;Age&quot; &quot;JobLevel&quot; &quot;TotalWorkingYears&quot; ...
+##   .. .. .. .. ..$ : chr [1:5] &quot;Age&quot; &quot;JobLevel&quot; &quot;TotalWorkingYears&quot; &quot;YearsAtCompany&quot; ...
+##   .. .. ..- attr(*, &quot;term.labels&quot;)= chr [1:5] &quot;Age&quot; &quot;JobLevel&quot; &quot;TotalWorkingYears&quot; &quot;YearsAtCompany&quot; ...
+##   .. .. ..- attr(*, &quot;order&quot;)= int [1:5] 1 1 1 1 1
+##   .. .. ..- attr(*, &quot;intercept&quot;)= int 1
+##   .. .. ..- attr(*, &quot;response&quot;)= int 1
+##   .. .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: R_GlobalEnv&gt; 
+##   .. .. ..- attr(*, &quot;predvars&quot;)= language list(MonthlyIncome, Age, JobLevel, TotalWorkingYears, YearsAtCompany, YearsInCurrentRole)
+##   .. .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:6] &quot;numeric&quot; &quot;numeric&quot; &quot;numeric&quot; &quot;numeric&quot; ...
+##   .. .. .. ..- attr(*, &quot;names&quot;)= chr [1:6] &quot;MonthlyIncome&quot; &quot;Age&quot; &quot;JobLevel&quot; &quot;TotalWorkingYears&quot; ...
+##  $ effect.sources: chr [1:6] &quot;(Intercept)&quot; &quot;Age&quot; &quot;JobLevel&quot; &quot;TotalWorkingYears&quot; ...
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##  $               : NULL
+##   [list output truncated]
+##  - attr(*, &quot;class&quot;)= chr [1:2] &quot;lmm&quot; &quot;lm&quot;</code></pre>
+<pre class="r"><code>#Now we will calculate RMSE in order to find the best model for predicting monthly income using the No Income dataset (also 300 observations).
+# RMSE Formula for Model A
+RMSE_Model_A &lt;- sqrt(mean((test_MSPE$MonthlyIncome - Predictions_Model_A)^2))
+RMSE_Model_A #RMSE is 1057.54</code></pre>
+<pre><code>## [1] 1003.059</code></pre>
+<pre class="r"><code># RMSE Formula for Model A
+RMSE_Model_B &lt;- sqrt(mean((test_MSPE$MonthlyIncome - Predictions_Model_B)^2))
+RMSE_Model_B #RMSE is 1357.33</code></pre>
+<pre><code>## [1] 1273.824</code></pre>
+<pre class="r"><code>#In order to predict monthly income, we will use the best model for predicting Attrition, the down sample Naive Bayes model.
+model_D &lt;- naiveBayes(MonthlyIncome ~ Age + Attrition + JobInvolvement + JobLevel 
+                     + JobRole + MaritalStatus + OverTime 
+                    + PercentSalaryHike + PerformanceRating 
+                    + TotalWorkingYears + YearsAtCompany + YearsInCurrentRole 
+                    + YearsSinceLastPromotion + YearsWithCurrManager, 
+                    data = Case2_A_DS, laplace = 1)
+
+#Prep No Salary dataset for use (all variables to be numerics)
+Case2_NS &lt;- Case2_NS %&gt;% rename(&quot;ID&quot; = &quot;ï..ID&quot;)
+Case2_NS_S &lt;- Case2_NS
+view(Case2_NS_S)
+
+Case2_NS_S &lt;- Case2_NS_S %&gt;% select(-c(&quot;Over18&quot;, &quot;EmployeeCount&quot;, &quot;StandardHours&quot;, &quot;EmployeeNumber&quot;))
+
+Case2_NS_S$Attrition &lt;- ifelse(Case2_NS_S$Attrition == &quot;Yes&quot;, 1, 0)
+
+Case2_NS_S$BusinessTravel &lt;- factor(ifelse(Case2_NS$BusinessTravel == &quot;Non-Travel&quot;, 1,
+                      ifelse(Case2_NS$BusinessTravel == &quot;Travel_Rarely&quot;, 2,
+                          ifelse(Case2_NS$BusinessTravel == &quot;Travel_Frequently&quot;, 3, &quot;NA&quot;))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;NA&quot;))
+
+Case2_NS_S$Department &lt;- factor(ifelse(Case2_NS$Department == &quot;Human Resources&quot;, 1,
+                      ifelse(Case2_NS$Department == &quot;Research &amp; Development&quot;, 2,
+                          ifelse(Case2_NS$Department == &quot;Sales&quot;, 3, &quot;NA&quot;))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;NA&quot;))
+
+Case2_NS_S$EducationField &lt;- factor(ifelse(Case2_NS$EducationField == &quot;Human Resources&quot;, 1,
+                    ifelse(Case2_NS$EducationField == &quot;Life Sciences&quot;, 2,
+                          ifelse(Case2_NS$EducationField == &quot;Marketing&quot;, 3, 
+                             ifelse(Case2_NS$EducationField == &quot;Medical&quot;, 4,
+                                    ifelse(Case2_NS$EducationField == &quot;Other&quot;, 5,
+                                          ifelse(Case2_NS$EducationField == &quot;Technical Degree&quot;, 6, &quot;NA&quot;)))))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;NA&quot;))
+                                               
+Case2_NS_S$Gender &lt;- ifelse(Case2_NS$Gender == &quot;Female&quot;, 1, 2)
+
+Case2_NS_S$JobRole &lt;- factor(ifelse(Case2_NS$JobRole == &quot;Healthcare Representative&quot;, 1,
+                          ifelse(Case2_NS$JobRole == &quot;Human Resources&quot;, 2, 
+                             ifelse(Case2_NS$JobRole == &quot;Laboratory Technician&quot;, 3,
+                                    ifelse(Case2_NS$JobRole == &quot;Manager&quot;, 4,
+                                          ifelse(Case2_NS$JobRole == &quot;Manufacturing Director&quot;, 5, 
+                                                 ifelse(Case2_NS$JobRole == &quot;Research Director&quot;, 6,
+                                                        ifelse(Case2_NS$JobRole == &quot;Research Scientist&quot;, 7,
+                                                               ifelse(Case2_NS$JobRole == &quot;Sales Executive&quot;, 8,
+                                                                      ifelse(Case2_NS$JobRole == &quot;Sales Representative&quot;, 9, &quot;NA&quot;))))))))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;,&quot;6&quot;,&quot;7&quot;,&quot;8&quot;,&quot;9&quot;,&quot;NA&quot;))
+
+Case2_NS_S$MaritalStatus &lt;- factor(ifelse(Case2_NS$MaritalStatus == &quot;Single&quot;, 1,
+                      ifelse(Case2_NS$MaritalStatus == &quot;Married&quot;, 2,
+                          ifelse(Case2_NS$MaritalStatus == &quot;Divorced&quot;, 3, &quot;NA&quot;))),
+                                               levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;NA&quot;))
+
+Case2_NS_S$OverTime &lt;- ifelse(Case2_NS$OverTime == &quot;Yes&quot;, 1, 0)
+view(Case2_NS_S)
+
+
+Case2_NS_S$BusinessTravel &lt;- as.numeric(Case2_NS_S$BusinessTravel)
+Case2_NS_S$Department &lt;- as.numeric(Case2_NS_S$Department)
+Case2_NS_S$EducationField &lt;- as.numeric(Case2_NS_S$EducationField)
+Case2_NS_S$Gender &lt;- as.numeric(Case2_NS_S$Gender)
+Case2_NS_S$JobRole &lt;- as.numeric(Case2_NS_S$JobRole)
+Case2_NS_S$MaritalStatus &lt;- as.numeric(Case2_NS_S$MaritalStatus)
+Case2_NS_S$OverTime &lt;- as.numeric(Case2_NS_S$OverTime)
+Case2_NS_S$ID &lt;- as.numeric(Case2_NS_S$ID)
+Case2_NS_S$Attrition &lt;- as.numeric(Case2_NS_S$Attrition)
+Case2_NS_S$Age &lt;- as.numeric(Case2_NS_S$Age)
+Case2_NS_S$DailyRate &lt;- as.numeric(Case2_NS_S$DailyRate)
+Case2_NS_S$DistanceFromHome &lt;- as.numeric(Case2_NS_S$DistanceFromHome)
+Case2_NS_S$Education &lt;- as.numeric(Case2_NS_S$Education)
+Case2_NS_S$EnvironmentSatisfaction &lt;- as.numeric(Case2_NS_S$EnvironmentSatisfaction)
+Case2_NS_S$HourlyRate &lt;- as.numeric(Case2_NS_S$HourlyRate)
+Case2_NS_S$JobInvolvement &lt;- as.numeric(Case2_NS_S$JobInvolvement)
+Case2_NS_S$JobLevel &lt;- as.numeric(Case2_NS_S$JobLevel)
+Case2_NS_S$JobSatisfaction &lt;- as.numeric(Case2_NS_S$JobSatisfaction)
+Case2_NS_S$MonthlyRate &lt;- as.numeric(Case2_NS_S$MonthlyRate)
+Case2_NS_S$NumCompaniesWorked &lt;- as.numeric(Case2_NS_S$NumCompaniesWorked)
+Case2_NS_S$PercentSalaryHike &lt;- as.numeric(Case2_NS_S$PercentSalaryHike)
+Case2_NS_S$PerformanceRating &lt;- as.numeric(Case2_NS_S$PerformanceRating)
+Case2_NS_S$RelationshipSatisfaction &lt;- as.numeric(Case2_NS_S$RelationshipSatisfaction)
+Case2_NS_S$StockOptionLevel &lt;- as.numeric(Case2_NS_S$StockOptionLevel)
+Case2_NS_S$TotalWorkingYears &lt;- as.numeric(Case2_NS_S$TotalWorkingYears)
+Case2_NS_S$TrainingTimesLastYear &lt;- as.numeric(Case2_NS_S$TrainingTimesLastYear)
+Case2_NS_S$WorkLifeBalance &lt;- as.numeric(Case2_NS_S$WorkLifeBalance)
+Case2_NS_S$YearsAtCompany &lt;- as.numeric(Case2_NS_S$YearsAtCompany)
+Case2_NS_S$YearsInCurrentRole &lt;- as.numeric(Case2_NS_S$YearsInCurrentRole)
+Case2_NS_S$YearsSinceLastPromotion &lt;- as.numeric(Case2_NS_S$YearsSinceLastPromotion)
+Case2_NS_S$YearsWithCurrManager &lt;- as.numeric(Case2_NS_S$YearsWithCurrManager)
+
+missing &lt;- sapply(Case2_NS_S, function(x) sum(is.na(x)))
+sum(missing)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>summary(Case2_NS_S)</code></pre>
+<pre><code>##        ID              Age          Attrition    BusinessTravel 
+##  Min.   : 871.0   Min.   :18.00   Min.   :0.00   Min.   :1.000  
+##  1st Qu.: 945.8   1st Qu.:29.00   1st Qu.:0.00   1st Qu.:2.000  
+##  Median :1020.5   Median :36.00   Median :0.00   Median :2.000  
+##  Mean   :1020.5   Mean   :36.27   Mean   :0.17   Mean   :2.127  
+##  3rd Qu.:1095.2   3rd Qu.:42.00   3rd Qu.:0.00   3rd Qu.:2.000  
+##  Max.   :1170.0   Max.   :60.00   Max.   :1.00   Max.   :3.000  
+##    DailyRate        Department    DistanceFromHome   Education    
+##  Min.   : 105.0   Min.   :1.000   Min.   : 1.00    Min.   :1.000  
+##  1st Qu.: 429.2   1st Qu.:2.000   1st Qu.: 2.00    1st Qu.:2.000  
+##  Median : 693.0   Median :2.000   Median : 7.00    Median :3.000  
+##  Mean   : 783.2   Mean   :2.253   Mean   : 8.70    Mean   :2.887  
+##  3rd Qu.:1171.2   3rd Qu.:3.000   3rd Qu.:11.25    3rd Qu.:4.000  
+##  Max.   :1492.0   Max.   :3.000   Max.   :29.00    Max.   :5.000  
+##  EducationField  EnvironmentSatisfaction     Gender       HourlyRate    
+##  Min.   :1.000   Min.   :1.00            Min.   :1.00   Min.   : 30.00  
+##  1st Qu.:2.000   1st Qu.:2.00            1st Qu.:1.00   1st Qu.: 48.00  
+##  Median :3.000   Median :3.00            Median :2.00   Median : 66.00  
+##  Mean   :3.297   Mean   :2.77            Mean   :1.57   Mean   : 66.52  
+##  3rd Qu.:4.000   3rd Qu.:4.00            3rd Qu.:2.00   3rd Qu.: 85.25  
+##  Max.   :6.000   Max.   :4.00            Max.   :2.00   Max.   :100.00  
+##  JobInvolvement     JobLevel    JobRole      JobSatisfaction MaritalStatus  
+##  Min.   :1.000   Min.   :1   Min.   :1.000   Min.   :1.000   Min.   :1.000  
+##  1st Qu.:2.000   1st Qu.:1   1st Qu.:3.000   1st Qu.:2.000   1st Qu.:1.000  
+##  Median :3.000   Median :2   Median :6.000   Median :3.000   Median :2.000  
+##  Mean   :2.737   Mean   :2   Mean   :5.447   Mean   :2.747   Mean   :1.923  
+##  3rd Qu.:3.000   3rd Qu.:2   3rd Qu.:8.000   3rd Qu.:4.000   3rd Qu.:2.000  
+##  Max.   :4.000   Max.   :5   Max.   :9.000   Max.   :4.000   Max.   :3.000  
+##   MonthlyRate    NumCompaniesWorked    OverTime      PercentSalaryHike
+##  Min.   : 2122   Min.   :0.00       Min.   :0.0000   Min.   :11.00    
+##  1st Qu.: 7778   1st Qu.:1.00       1st Qu.:0.0000   1st Qu.:12.75    
+##  Median :13508   Median :2.00       Median :0.0000   Median :14.00    
+##  Mean   :14091   Mean   :2.74       Mean   :0.2533   Mean   :15.28    
+##  3rd Qu.:20464   3rd Qu.:4.00       3rd Qu.:1.0000   3rd Qu.:18.00    
+##  Max.   :26999   Max.   :9.00       Max.   :1.0000   Max.   :25.00    
+##  PerformanceRating RelationshipSatisfaction StockOptionLevel TotalWorkingYears
+##  Min.   :3.00      Min.   :1.000            Min.   :0.0000   Min.   : 0.00    
+##  1st Qu.:3.00      1st Qu.:2.000            1st Qu.:0.0000   1st Qu.: 6.00    
+##  Median :3.00      Median :3.000            Median :1.0000   Median : 9.00    
+##  Mean   :3.16      Mean   :2.637            Mean   :0.8333   Mean   :10.78    
+##  3rd Qu.:3.00      3rd Qu.:4.000            3rd Qu.:1.0000   3rd Qu.:14.00    
+##  Max.   :4.00      Max.   :4.000            Max.   :3.0000   Max.   :40.00    
+##  TrainingTimesLastYear WorkLifeBalance YearsAtCompany   YearsInCurrentRole
+##  Min.   :0.00          Min.   :1.000   Min.   : 0.000   Min.   : 0.0      
+##  1st Qu.:2.00          1st Qu.:2.000   1st Qu.: 3.000   1st Qu.: 2.0      
+##  Median :3.00          Median :3.000   Median : 5.000   Median : 3.0      
+##  Mean   :2.82          Mean   :2.717   Mean   : 6.623   Mean   : 4.2      
+##  3rd Qu.:3.00          3rd Qu.:3.000   3rd Qu.: 9.000   3rd Qu.: 7.0      
+##  Max.   :6.00          Max.   :4.000   Max.   :33.000   Max.   :16.0      
+##  YearsSinceLastPromotion YearsWithCurrManager
+##  Min.   : 0.00           Min.   : 0.000      
+##  1st Qu.: 0.00           1st Qu.: 2.000      
+##  Median : 1.00           Median : 3.000      
+##  Mean   : 2.14           Mean   : 3.817      
+##  3rd Qu.: 3.00           3rd Qu.: 7.000      
+##  Max.   :15.00           Max.   :15.000</code></pre>
+<pre class="r"><code>#Now we can run the down sample model on the dataset for prediction. This will produce a new dataset of predictions for monthly income.
+Case2_A_S_P &lt;- data.frame(ID = Case2_NS_S$ID, Predict_MonthlyIncome = predict(model_D, newdata = Case2_NS_S))
+
+# Print first few rows of the attrition and monthly income predictions dataframe
+view(Case2_A_S_P)
+write.csv(Case2_A_A_P, &quot;/Users/kenyaroy/doing data science/case study 2/CaseStudy2/Kenya_Roy_CaseStudy2Predictions_Attrition.csv&quot;, row.names=FALSE)
+write.csv(Case2_A_S_P, &quot;/Users/kenyaroy/doing data science/case study 2/CaseStudy2/Kenya_Roy_CaseStudy2Predictions_Salary.csv&quot;, row.names=FALSE)</code></pre>
+<pre class="r"><code>#Discussion:
+#Using the information you all at Frito-Lay provided us, we were able to conduct a thorough exploratory data analysis, through that analysis, we found that attrition and monthly income are correlated to plenty of internal and external variables at Frito-Lay. We found that the top three variables correlated to employee attrition are Overtime, Marital Status, and Job Involvement. Further, we found that our models for attrition and monthly income were successful in predicting the two variables. We find that our observations could help Frito-Lay strengthen employee retention. 
+
+#Our recommendations are the following: Focus on bringing down overtime work. This could be tied in with job involvement&#39;s high correlation to attrition as well. Employees could stand to have their work assignments/ role expectations reorganized to improve workload and work-life balance. Focusing on these variables could be key to your company turning around retention as employees priorities have shifted in the face of the COVID-19 pandemic: According to a LinkedIn Report on COVID-19 Talent Trends, burnout has risen around 9% since the start of the pandemic. In the face of the Great Resignation, an employer like you have the capacity and tools strategize to make sure employees are happy with their job involvement, including overtime. 
+
+#Should you need any further assistance piecing out your study into employee attrition, we would be happy to move forward. 
+
+#Contact Kenya Roy at kroy@mail.smu.edu for access to her github.io, datasets, or further questions.</code></pre>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,955 @@
+---
+title: "CaseStudy2"
+author: "Kenya Roy"
+date: "2023-04-06"
+output: html_document
+
+#Thank you for giving me and my team the opportunity to look into the very important issue of employee attrtion at Frito Lay. We were able to conduct an exploratory data analysis and develop models for predicting attrition and monthly income in the future. 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# To begin analysis, we will upload necessary files and download packages needed for analysis and we will read in necessary data files provided by the company. 
+library(corrplot)
+library(lares)
+library(RCurl) 
+library(jsonlite)
+library(tidyverse)
+library(aws.s3)
+library(caret)
+library(class)
+library(olsrr)
+library(readxl)
+library(e1071)
+library(ggplot2)
+library(ggthemes)
+library(GGally)
+library(dplyr)
+library(janitor)
+library(mixlm)
+
+#Read in CaseStudy2-data file
+Case2 <- read.table(textConnection(getURL("https://ddsproject1.s3.amazonaws.com/CaseStudy2-data.csv"
+                                          )), sep=",", header=TRUE)
+
+#Read in CaseStudy2 CompSet No Attrition file
+Case2_NA <- read.table(textConnection(getURL("https://ddsproject1.s3.amazonaws.com/CaseStudy2CompSet+No+Attrition.csv"
+                                          )), sep=",", header=TRUE)
+
+#Read in CaseStudy2 CompSet No salary file
+Case2_NS <- read.table(textConnection(getURL("https://ddsproject1.s3.amazonaws.com/CaseStudy2CompSet+No+Salary.csv"
+                                          )), sep=",", header=TRUE)
+view(Case2_NS)
+```
+
+```{r}
+#We will get a glimpse at the data 
+view(Case2)
+glimpse(Case2)
+get_dupes(Case2)
+missing <- sapply(Case2, function(x) sum(is.na(x)))
+sum(missing)
+summary(Case2)
+```
+ 
+```{r}
+#We can see that there are variables that will not impact the focus of our EDA, in other words, we will remove the non-influential factors. These factors were found to be not influential because they have no bearing on the variables of interest.
+#First, we will create datasets for EDA and modeling.
+Case2_clean <- Case2 %>% select(-c("Over18", "EmployeeCount", "StandardHours", "EmployeeNumber"))
+Case2_EDA <- Case2_clean
+Case2_A <- Case2_clean #Dataset for modeling
+summary(Case2_A)
+```
+
+```{r}
+#We first want to inspect the variables in the dataset starting with variables of interest: Attrition, Monthly Income 
+Case2_EDA %>% 
+  ggplot(aes(x=Attrition,fill=Attrition)) + 
+  geom_bar()+
+  geom_text(aes(label = after_stat(count)), stat = "count", vjust = 2, colour = "white")+
+  xlab("Attrition") + ylab("Count") + 
+  ggtitle("Attrition Count")
+#We can see that the attrition rate at Frito Lay is 16% as 140/870 observations in the dataset are coded "Yes" for Attrition.   
+```
+
+```{r}
+#Looking at Monthly Income, we can see the following:
+Case2_EDA %>% 
+  ggplot(aes(x=MonthlyIncome))+
+  geom_histogram(binwidth = 1000, color = "black", fill = "orange") + 
+  xlab("Monthly Income") + ylab("Count") + 
+  ggtitle("Distribution of Monthly Income")
+
+#This plot reflects a right-skewed distribution. A majority of Frito Lay employees make less than 10,000 a month. 
+#The range of employee income from 0 to $20,000 is very wide. In order to identify possible relationships between income and attrition, we found it necessary to group salaries and compare to attrition.
+```
+  
+ 
+
+```{r}
+#Groups were divided based on federal tax brackets with the smallest salary group containing those who fall into the lowest 2 tax brackets. 
+#Five Groups: 0-3500, 3501-7450, 7451-14170, 14171-17995, 17996-20000
+Case2_EDA$SalaryGroup <- cut(Case2_EDA$MonthlyIncome, c(0,3500,7450,14170,17995,20000), labels = c("<3,500", "3,501 - 7,450", "7,451 - 14,170", "14,171 - 17,995", "17,996 - <20,000"))
+```
+
+```{r}
+#We will now look at the same distribution of monthly income with the new salary groups.
+Case2_EDA %>% 
+  ggplot(aes(SalaryGroup)) +
+  geom_bar( fill = "orange") + 
+  xlab("Monthly Income by Salary Group") + ylab("Count") + 
+  ggtitle("Distribution of Monthly Income by Salary Group")
+
+#This bar chart shows that a majority of employees earn less than 7450 a month. 
+```
+
+
+```{r}
+#Knowing this, we will want to inspect the relationship between Monthly Income and Attrition as it relates lower monthly earners at Frito Lay.
+h_line <- .16 
+Case2_EDA %>% 
+  ggplot(aes(x=SalaryGroup,fill=Attrition)) +
+  geom_bar(position = "fill")+
+  ggtitle("Attrition vs Monthly Income by Salary Group") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(0, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) + 
+  xlab("Salary Groups") + 
+  ylab("Employees (Percent)")
+
+#Here, we can see that employees in the 3 lower salary groups have higher attrition than the two higher salary groups. We can also see that those who earn less than 3,500 a month at Frito-Lay have an attrition rate higher than average (over25%). 
+#Interestingly, we see that while the higher 2 salary groups have similar counts of employees, the attrition rate for the 4th tier salary group appears to be zero while the highest income group is closer to the company average.
+```
+
+
+```{r}
+### Now we will examine Age & Attrition 
+Case2_EDA %>%
+ggplot(aes(x = Age, fill = Attrition)) + 
+  geom_histogram(color="black", fill = "orange") + 
+  xlab("Attrition") + ylab("Monthly Income") + 
+  ggtitle("Attrition vs. Age")
+
+#We can see that while employee age ranges from 18 - 60, the distribution of ages are right-skewed. Like we did with monthly income, we will want to group employees by age to determine attrition's relationship to age.
+```
+
+
+
+
+```{r}
+#Groups were divided into five age groups. 
+#Five Groups: 18-25, 26-35, 36-45, 46-55, 56-60
+Case2_EDA$AgeGroup <- cut(Case2_EDA$Age, c(0,25,35,45,55,60), labels = c("<25", "26-35", "36 - 45", "46 - 55", "56 - 60"))
+```
+
+```{r}
+#We will now look at the same distribution of monthly income with the new salary groups.
+Case2_EDA %>% 
+  ggplot(aes(AgeGroup)) +
+  geom_bar( fill = "orange") + 
+  xlab("Age by Group") + ylab("Count") + 
+  ggtitle("Distribution of Age by Group")
+
+#This bar chart shows that a majority of employees age under the age of 45. 
+```
+
+```{r}
+#Knowing this, we will want to inspect the relationship between Age and Attrition as it relates younger employees at Frito Lay.
+h_line <- .16 
+Case2_EDA %>%
+  ggplot(aes(x=AgeGroup,fill=Attrition)) +
+  geom_bar(position = "fill") +
+  ggtitle("Attrition vs Age by Group") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(0, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) + 
+  xlab("Age Groups") + 
+  ylab("Employees (Percent)")
+
+#We can see that younger employees under 35, especially those under 25, have attritrion rates above company average. At the other end of the spectrum, older employees, ages 56 and above, have an attrition rate above company average.
+```
+
+```{r}
+#We will quickly inspect other variables in the dataset and compare them to the overall company attrition rate. 
+
+#OverTime & Attrition 
+Case2_EDA %>% 
+  ggplot(aes(x = OverTime, fill = Attrition)) +
+  geom_bar(position = 'fill') +
+  ggtitle("Overtime & Attrition") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(0, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) + 
+  xlab("OverTime") + 
+  ylab("Attrition")
+#Non-overtime workers' attrition rate is much higher than the company average and the rate of employees who don't work overtime at Frito-Lay. It will be important to look at overtime in comparison to other factors impacting attrition at Frito-Lay.
+```
+
+ 
+```{r}
+#Now, we will examine Job Involvement versus Attrition.
+Case2_EDA %>%
+  ggplot(aes(x = JobInvolvement, fill = Attrition)) +
+  geom_bar(position = 'fill') +
+  ggtitle("Attrition vs Job Involvement") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(1, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) + 
+  xlab("Job Involvement") + 
+  ylab("Attrition")
+#It appears that the attrition level for employees with level 1 job involvement have the highest turnover. Moreover, the turnover lessens as the level increases.
+```
+
+
+
+```{r}
+#Job Involvement vs. Attrition based on OverTime
+Case2_EDA %>%
+  ggplot(aes(x = JobInvolvement, fill = Attrition)) +
+  geom_bar(position = 'fill') +
+  ggtitle("Job Involvement vs. Attrition based on Overtime") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(1, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) +
+  facet_wrap( ~ OverTime) +
+  xlab("Job Involvement") + 
+  ylab("Attrition")
+
+#We can see a very high attrition percentage for employees with level 1 job involvement who worked overtime. Attrition decreases as the levels increase. Attrition levels are much lower for employees who do not work overtime. The downward trend of attrition as levels increase is also seen here. 
+```
+
+
+ 
+```{r}
+#Work-Life Balance & Attrition
+Case2_EDA %>% 
+  ggplot(aes(x = WorkLifeBalance, fill = Attrition)) +
+  geom_bar(position = 'fill') +
+  ggtitle("Work-Life Balance and Attrition") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(1, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) +
+  xlab("Work-Life Balance") + 
+  ylab("Attrition")
+
+#All levels of Work-Life balance have attrition levels close to company average. Employees with work-life balance tier 1 have the highest attrition level. We can identify what the work-life balance means applying it to OverTime as we did above.
+```
+
+
+```{r}
+#Work-life Balance and Attrition based on overtime
+Case2_EDA %>%
+  ggplot(aes(x = WorkLifeBalance, fill = Attrition)) +
+  geom_bar(position = 'fill') +
+  ggtitle("Work-Life Balance vs. Attrition based on Overtime") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(1, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) +
+  facet_wrap( ~ OverTime) +
+  xlab("Work-Life Balance") + 
+  ylab("Attrition")
+
+#Employees who work overtime with level 1 work-life balance (assumed to be more skewed towards work) have higher attrition than those with higher tier work-life balance levels. Employees with level 1 work-life balance who do not work overtime have the highest attrition rate, still lower than the attrition rates for those who work overtime. 
+
+#We could look at work-life balance based on job roles to get a better idea about the distribution of attrition. 
+```
+
+
+
+
+
+```{r}
+#Work-Life Balance & Attrition based on JobRole
+Case2_EDA %>% ggplot(aes(x = WorkLifeBalance, fill = Attrition)) +
+  geom_bar(position = 'fill') +
+  facet_wrap( ~ JobRole) + 
+  ggtitle("Work-Life Balance & Attrition based on JobRole") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(1, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) +
+  xlab("Work-Life Balance") + 
+  ylab("Attrition")
+
+#We can see roles like Lab Techs, Sales Representatives, Sales Execs, and Research scientists have higher attrition rates.
+```
+
+```{r}
+#Work-Life Balance & Attrition based on JobLevel 
+Case2_EDA %>% 
+  ggplot(aes(x = WorkLifeBalance, fill = Attrition)) +
+  geom_bar(position = 'fill') +
+  facet_wrap( ~ JobLevel) + 
+  ggtitle("Work-Life Balance & Attrition based on JobLevel") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(1, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) +
+  xlab("Work-Life Balance") + 
+  ylab("Attrition")
+#We can see here that attrition percentages seem to decrease with job levels as tiers increase across work-life balance with exception to employees with 3rd tier work-life balance in job level 5. 
+```
+
+
+
+```{r}
+#Work-Life Balance & Attrition based on OverTime
+Case2_EDA %>% 
+  ggplot(aes(x = WorkLifeBalance, fill = Attrition)) +
+  geom_bar(position = 'fill') +
+  facet_wrap( ~ OverTime) + 
+  ggtitle("Work-Life Balance & Attrition based on OverTime") +
+  scale_y_continuous(labels = scales::percent) +
+  geom_hline(aes(yintercept = h_line)) +
+  geom_text(aes(1, h_line, label = h_line, hjust = - .5, vjust = - 1.2)) +
+  xlab("Work-Life Balance") + 
+  ylab("Attrition")
+#Again, we see that employees who work overtime have higher attrition rates and those with less work life balance have higher attrition rates regardless of overtime work assignments.
+```
+ 
+
+```{r}
+#Here we will examine Overtime and WorkLifeBalance with the variables of interest. 
+Case2_EDA %>% select(OverTime,MonthlyIncome,WorkLifeBalance,Attrition) %>% 
+  ggpairs(aes(color=Attrition), lower=list(combo=wrap("facethist", binwidth=100)))
+```
+
+```{r}
+#Now that we've done a surface level look at the variables, we will now run a Linear Regression model to determine the variables that most impact attrition at Frito-Lay.
+#To determine relationships between variables using linear regression, we will first need to make sure all variables are numerics. 
+
+#Create Levels (alphabetical) for categorical variables and turn all variables numeric
+
+Case2_A$Attrition <- ifelse(Case2$Attrition == "Yes", 1, 0)
+
+Case2_A$BusinessTravel <- factor(ifelse(Case2$BusinessTravel == "Non-Travel", 1,
+                      ifelse(Case2$BusinessTravel == "Travel_Rarely", 2,
+                          ifelse(Case2$BusinessTravel == "Travel_Frequently", 3, "NA"))),
+                                               levels = c("1", "2", "3", "NA"))
+
+Case2_A$Department <- factor(ifelse(Case2$Department == "Human Resources", 1,
+                      ifelse(Case2$Department == "Research & Development", 2,
+                          ifelse(Case2$Department == "Sales", 3, "NA"))),
+                                               levels = c("1", "2", "3", "NA"))
+
+Case2_A$EducationField <- factor(ifelse(Case2$EducationField == "Human Resources", 1,
+                    ifelse(Case2$EducationField == "Life Sciences", 2,
+                          ifelse(Case2$EducationField == "Marketing", 3, 
+                             ifelse(Case2$EducationField == "Medical", 4,
+                                    ifelse(Case2$EducationField == "Other", 5,
+                                          ifelse(Case2$EducationField == "Technical Degree", 6, "NA")))))),
+                                               levels = c("1", "2", "3", "4", "5", "6", "NA"))
+                                               
+Case2_A$Gender <- ifelse(Case2$Gender == "Female", 1, 2)
+
+Case2_A$JobRole <- factor(ifelse(Case2$JobRole == "Healthcare Representative", 1,
+                          ifelse(Case2$JobRole == "Human Resources", 2, 
+                             ifelse(Case2$JobRole == "Laboratory Technician", 3,
+                                    ifelse(Case2$JobRole == "Manager", 4,
+                                          ifelse(Case2$JobRole == "Manufacturing Director", 5, 
+                                                 ifelse(Case2$JobRole == "Research Director", 6,
+                                                        ifelse(Case2$JobRole == "Research Scientist", 7,
+                                                               ifelse(Case2$JobRole == "Sales Executive", 8,
+                                                                      ifelse(Case2$JobRole == "Sales Representative", 9, "NA"))))))))),
+                                               levels = c("1", "2", "3", "4", "5","6","7","8","9","NA"))
+
+Case2_A$MaritalStatus <- factor(ifelse(Case2$MaritalStatus == "Single", 1,
+                      ifelse(Case2$MaritalStatus == "Married", 2,
+                          ifelse(Case2$MaritalStatus == "Divorced", 3, "NA"))),
+                                               levels = c("1", "2", "3", "NA"))
+
+Case2_A$OverTime <- ifelse(Case2$OverTime == "Yes", 1, 0)
+view(Case2_A)
+
+
+Case2_A$Attrition <- as.numeric(Case2_A$Attrition)
+Case2_A$BusinessTravel <- as.numeric(Case2_A$BusinessTravel)
+Case2_A$Department <- as.numeric(Case2_A$Department)
+Case2_A$EducationField <- as.numeric(Case2_A$EducationField)
+Case2_A$Gender <- as.numeric(Case2_A$Gender)
+Case2_A$JobRole <- as.numeric(Case2_A$JobRole)
+Case2_A$MaritalStatus <- as.numeric(Case2_A$MaritalStatus)
+Case2_A$OverTime <- as.numeric(Case2_A$OverTime)
+
+Case2_A$ID <- as.numeric(Case2_A$ID)
+Case2_A$Age <- as.numeric(Case2_A$Age)
+Case2_A$DailyRate <- as.numeric(Case2_A$DailyRate)
+Case2_A$DistanceFromHome <- as.numeric(Case2_A$DistanceFromHome)
+Case2_A$Education <- as.numeric(Case2_A$Education)
+Case2_A$EnvironmentSatisfaction <- as.numeric(Case2_A$EnvironmentSatisfaction)
+Case2_A$HourlyRate <- as.numeric(Case2_A$HourlyRate)
+Case2_A$JobInvolvement <- as.numeric(Case2_A$JobInvolvement)
+Case2_A$JobLevel <- as.numeric(Case2_A$JobLevel)
+Case2_A$JobSatisfaction <- as.numeric(Case2_A$JobSatisfaction)
+Case2_A$MonthlyIncome <- as.numeric(Case2_A$MonthlyIncome)
+Case2_A$MonthlyRate <- as.numeric(Case2_A$MonthlyRate)
+Case2_A$NumCompaniesWorked <- as.numeric(Case2_A$NumCompaniesWorked)
+Case2_A$PercentSalaryHike <- as.numeric(Case2_A$PercentSalaryHike)
+Case2_A$PerformanceRating <- as.numeric(Case2_A$PerformanceRating)
+Case2_A$RelationshipSatisfaction <- as.numeric(Case2_A$RelationshipSatisfaction)
+Case2_A$StockOptionLevel <- as.numeric(Case2_A$StockOptionLevel)
+Case2_A$TotalWorkingYears <- as.numeric(Case2_A$TotalWorkingYears)
+Case2_A$TrainingTimesLastYear <- as.numeric(Case2_A$TrainingTimesLastYear)
+Case2_A$WorkLifeBalance <- as.numeric(Case2_A$WorkLifeBalance)
+Case2_A$YearsAtCompany <- as.numeric(Case2_A$YearsAtCompany)
+Case2_A$YearsInCurrentRole <- as.numeric(Case2_A$YearsInCurrentRole)
+Case2_A$YearsSinceLastPromotion <- as.numeric(Case2_A$YearsSinceLastPromotion)
+Case2_A$YearsWithCurrManager <- as.numeric(Case2_A$YearsWithCurrManager)
+
+missing <- sapply(Case2_A, function(x) sum(is.na(x)))
+sum(missing)
+summary(Case2_A)
+```
+We will use KNN to determine factors most influential to Attrition. We will create a correlation plot to demonstrate the variables with the highest correlations in the dataset.
+
+```{r}
+#We will get a look at correlation across all variables in the dataset now. 
+Case2_A_corr <- Case2_A %>% select(-c("ID"))
+corrplot(cor(Case2_A_corr))
+
+#Variables most influential in this dataset are: MonthlyIncome, Job Level, TotalWorkingYears, Performance Rating, PercentSalaryHike, YearsAtCompany
+
+#Key Relationships Identified
+#1. JobLevel correlated with MonthlyIncome and TotalWorkingYears
+#2. YearsAtCompany highly correlated to YearsInCurrentRole, YearsSinceLastPromotion, YearsWithCurrManager
+#3. Performance Rating is highly correlated to PercentSalaryHike
+```
+
+
+
+```{r}
+#We can take a better look at variables most correlated to specific variables. We want to focus on key variables Attrition and MonthlyIncome
+#Top Correlated Variables for Attrition & MonthlyIncome
+corr_var(Case2_A, Attrition, top=5)
+corr_var(Case2_A, MonthlyIncome, top=5)
+#Attrition's 5 largest correlated variables: OverTime, JobInvolvement, MaritalStatus, TotalWorkingYears, JobInvolvement
+#MonthlyIncome's 5 largest correlated variables: JobLevel, TotalWorkingYears, JobRole, YearsAtCompany, YearsinCurrentRole
+```
+
+
+
+model <- lm(Attrition  ~ Age+JobInvolvement+JobLevel+JobLevel+JobRole+MaritalStatus+MonthlyIncome+OverTime+PercentSalaryHike+PerformanceRating+TotalWorkingYears+YearsAtCompany+YearsInCurrentRole+YearsSinceLastPromotion+YearsWithCurrManager, data = Case2_A)
+# Summarize the model
+#summary(model)
+```{r}
+###Now we will focus on creating models to predict attrition with the Frito-Lay dataset
+#First we will work on the Linear Regression Model 
+model <- lm(Attrition  ~ Age+BusinessTravel+DailyRate+Department+DistanceFromHome+Education+EducationField+EnvironmentSatisfaction+Gender+HourlyRate+JobInvolvement+JobLevel+JobRole+MaritalStatus+MonthlyIncome+MonthlyRate+NumCompaniesWorked+OverTime+PercentSalaryHike+PerformanceRating+RelationshipSatisfaction+StockOptionLevel+TotalWorkingYears+TrainingTimesLastYear+WorkLifeBalance+YearsAtCompany+YearsInCurrentRole+YearsSinceLastPromotion+YearsWithCurrManager, data = Case2_A)
+```
+
+```{r}
+#Naive Bayes of Case2Study full set
+iterations = 100
+
+masterAcc = matrix(nrow = iterations)
+masterSen = matrix(nrow = iterations)
+masterSpec = matrix(nrow = iterations)
+
+splitPerc = 0.7
+for(j in 1:iterations) {
+  
+  trainIndices = sample(seq(1:length(Case2_A$ID)), round(splitPerc *length(Case2_A$ID)))
+  train = Case2_A[trainIndices, ]
+  test = Case2_A[-trainIndices, ]
+  
+  model = naiveBayes(Attrition ~ Age + JobInvolvement + JobLevel 
+                     + JobRole + MaritalStatus + MonthlyIncome + OverTime 
+                    + PercentSalaryHike + PerformanceRating 
+                    + TotalWorkingYears + YearsAtCompany + YearsInCurrentRole 
+                    + YearsSinceLastPromotion + YearsWithCurrManager, 
+                    data = train, laplace = 1)
+  
+  table(predict(model, test), test$Attrition)
+  
+  CM = confusionMatrix(table(predict(model, test), test$Attrition))
+  masterAcc[j] = CM$overall[1]
+  masterSen[j] = CM$byClass[1]
+  masterSpec[j] = CM$byClass[2]
+}
+CM
+
+MeanAcc = colMeans(masterAcc)
+MeanAcc
+MeanSen = colMeans(masterSen)
+MeanSen
+MeanSpec = colMeans(masterSpec)
+MeanSpec
+
+#Accuracy and sensitivity are ideal but specificity is not high enought to be considered a good fit for this dataset.
+```
+
+
+```{r}
+#Down Sampling - Attrition
+#Before we make a downsampling model, we will make a new column for downsampling attrition before throwing it into a Naive Bayes Model.
+
+#Columns for Observations with and without Attrition
+Case2_A_A_Yes = which(Case2_A$Attrition=="1")
+Case2_A_A_No = which(Case2_A$Attrition=="0")
+
+#Checking Column Lengths (140 Yeses and 140 No's)
+length(Case2_A_A_Yes)
+length(Case2_A_A_No)
+
+#Down sample 
+Case2_A_DS_No= sample(Case2_A_A_No,length(Case2_A_A_Yes))
+Case2_A_DS=Case2_A[c(Case2_A_DS_No,Case2_A_A_Yes),]
+
+view(Case2_A_DS)
+nrow(filter(Case2_A_DS, Attrition == 1))
+nrow(filter(Case2_A_DS, Attrition == 0))
+
+#Naive Bayes Down Sampling Model
+iterations = 100
+masterAcc = matrix(nrow = iterations)
+masterSen = matrix(nrow = iterations)
+masterSpec = matrix(nrow = iterations)
+splitPerc = 0.7 
+for(j in 1:iterations) {
+  
+  trainIndices = sample(seq(1:length(Case2_A_DS$ID)), round(splitPerc *length(Case2_A_DS$ID)))
+  train = Case2_A_DS[trainIndices, ]
+  test = Case2_A_DS[-trainIndices, ]
+  
+  model = naiveBayes(Attrition ~ Age + JobInvolvement + JobLevel
+                     + JobRole + MaritalStatus + MonthlyIncome + OverTime 
+                    + PercentSalaryHike + PerformanceRating + TotalWorkingYears 
+                    + YearsAtCompany + YearsInCurrentRole + YearsSinceLastPromotion 
+                    + YearsWithCurrManager, data = train, laplace = 1)
+  
+  table(predict(model, test), test$Attrition)
+  
+  CM = confusionMatrix(table(predict(model, test), test$Attrition))
+  masterAcc[j] = CM$overall[1]
+  masterSen[j] = CM$byClass[1]
+  masterSpec[j] = CM$byClass[2]
+}
+
+CM
+
+#Mean Accuracy
+MeanAcc = colMeans(masterAcc)
+MeanAcc
+
+#Mean Sensitivity
+MeanSen = colMeans(masterSen)
+MeanSen
+
+#Mean Specificity
+MeanSpec = colMeans(masterSpec)
+MeanSpec
+
+#While accuracy isn't as high as before, sensitivity and specificity meet the condition of having values > 60%. Lets see if Upsampling will return even better results.
+```
+
+
+```{r}
+#Up Sampling - Attrition
+##Up Sampling of Attrition (There are 730 Yeses and 730 Nos)
+Case2_A_US_Yes= sample(Case2_A_A_Yes,length(Case2_A_A_No), replace = TRUE)
+length(Case2_A_US_Yes)
+
+Case2_A_US=Case2_A[c(Case2_A_US_Yes,Case2_A_A_No),]
+
+view(Case2_A_US)
+nrow(filter(Case2_A_US, Attrition == 1))
+nrow(filter(Case2_A_US, Attrition == 0))
+
+#Naive Bayes Up Sample
+iterations = 100
+masterAcc = matrix(nrow = iterations)
+masterSen = matrix(nrow = iterations)
+masterSpec = matrix(nrow = iterations)
+splitPerc = 0.7 
+
+for(j in 1:iterations) {
+  
+  trainIndices = sample(seq(1:length(Case2_A_US$ID)), round(splitPerc * length(Case2_A_US$ID)))
+  train = Case2_A_US[trainIndices, ]
+  test = Case2_A_US[-trainIndices, ]
+  
+  model = naiveBayes(Attrition ~ Age + JobInvolvement + JobLevel
+                     + JobRole + MaritalStatus + MonthlyIncome + OverTime 
+                    + PercentSalaryHike + PerformanceRating 
+                    + TotalWorkingYears + YearsAtCompany + YearsInCurrentRole 
+                    + YearsSinceLastPromotion + YearsWithCurrManager, 
+                    data = train, laplace = 1)
+  
+  table(predict(model, test), test$Attrition)
+  
+  CM = confusionMatrix(table(predict(model, test), test$Attrition))
+  masterAcc[j] = CM$overall[1]
+  masterSen[j] = CM$byClass[1]
+  masterSpec[j] = CM$byClass[2]
+}
+#Confusion Matrix
+CM
+
+#Mean Accuracy
+MeanAcc = colMeans(masterAcc)
+MeanAcc
+
+#Mean Sensitivity
+MeanSen = colMeans(masterSen)
+MeanSen
+
+#Mean Specificity
+MeanSpec = colMeans(masterSpec)
+MeanSpec
+
+#Specificity in the Upsample falls below the threshold we are looking for. We will use down sample model to conduct predictions for attrition and monthly income.
+```
+
+```{r}
+#Before we use the Down Sample model to predict attrition, we will need to make all CaseStudy No Attrition variables numeric as we did for CaseStudy2 dataset.
+
+#Levels (alphabetical)
+Case2_NA_A <- Case2_NA
+view(Case2_NA_A)
+
+Case2_NA_A <- Case2_NA_A %>% select(-c("Over18", "EmployeeCount", "StandardHours", "EmployeeNumber"))
+
+Case2_NA_A$BusinessTravel <- factor(ifelse(Case2_NA$BusinessTravel == "Non-Travel", 1,
+                      ifelse(Case2_NA$BusinessTravel == "Travel_Rarely", 2,
+                          ifelse(Case2_NA$BusinessTravel == "Travel_Frequently", 3, "NA"))),
+                                               levels = c("1", "2", "3", "NA"))
+
+Case2_NA_A$Department <- factor(ifelse(Case2_NA$Department == "Human Resources", 1,
+                      ifelse(Case2_NA$Department == "Research & Development", 2,
+                          ifelse(Case2_NA$Department == "Sales", 3, "NA"))),
+                                               levels = c("1", "2", "3", "NA"))
+
+Case2_NA_A$EducationField <- factor(ifelse(Case2_NA$EducationField == "Human Resources", 1,
+                    ifelse(Case2_NA$EducationField == "Life Sciences", 2,
+                          ifelse(Case2_NA$EducationField == "Marketing", 3, 
+                             ifelse(Case2_NA$EducationField == "Medical", 4,
+                                    ifelse(Case2_NA$EducationField == "Other", 5,
+                                          ifelse(Case2_NA$EducationField == "Technical Degree", 6, "NA")))))),
+                                               levels = c("1", "2", "3", "4", "5", "6", "NA"))
+                                               
+Case2_NA_A$Gender <- ifelse(Case2_NA$Gender == "Female", 1, 2)
+
+Case2_NA_A$JobRole <- factor(ifelse(Case2_NA$JobRole == "Healthcare Representative", 1,
+                          ifelse(Case2_NA$JobRole == "Human Resources", 2, 
+                             ifelse(Case2_NA$JobRole == "Laboratory Technician", 3,
+                                    ifelse(Case2_NA$JobRole == "Manager", 4,
+                                          ifelse(Case2_NA$JobRole == "Manufacturing Director", 5, 
+                                                 ifelse(Case2_NA$JobRole == "Research Director", 6,
+                                                        ifelse(Case2_NA$JobRole == "Research Scientist", 7,
+                                                               ifelse(Case2_NA$JobRole == "Sales Executive", 8,
+                                                                      ifelse(Case2_NA$JobRole == "Sales Representative", 9, "NA"))))))))),
+                                               levels = c("1", "2", "3", "4", "5","6","7","8","9","NA"))
+
+Case2_NA_A$MaritalStatus <- factor(ifelse(Case2_NA$MaritalStatus == "Single", 1,
+                      ifelse(Case2_NA$MaritalStatus == "Married", 2,
+                          ifelse(Case2_NA$MaritalStatus == "Divorced", 3, "NA"))),
+                                               levels = c("1", "2", "3", "NA"))
+
+Case2_NA_A$OverTime <- ifelse(Case2_NA$OverTime == "Yes", 1, 0)
+view(Case2_NA_A)
+
+
+Case2_NA_A$BusinessTravel <- as.numeric(Case2_NA_A$BusinessTravel)
+Case2_NA_A$Department <- as.numeric(Case2_NA_A$Department)
+Case2_NA_A$EducationField <- as.numeric(Case2_NA_A$EducationField)
+Case2_NA_A$Gender <- as.numeric(Case2_NA_A$Gender)
+Case2_NA_A$JobRole <- as.numeric(Case2_NA_A$JobRole)
+Case2_NA_A$MaritalStatus <- as.numeric(Case2_NA_A$MaritalStatus)
+Case2_NA_A$OverTime <- as.numeric(Case2_NA_A$OverTime)
+
+Case2_NA_A$ID <- as.numeric(Case2_NA_A$ID)
+Case2_NA_A$Age <- as.numeric(Case2_NA_A$Age)
+Case2_NA_A$DailyRate <- as.numeric(Case2_NA_A$DailyRate)
+Case2_NA_A$DistanceFromHome <- as.numeric(Case2_NA_A$DistanceFromHome)
+Case2_NA_A$Education <- as.numeric(Case2_NA_A$Education)
+Case2_NA_A$EnvironmentSatisfaction <- as.numeric(Case2_NA_A$EnvironmentSatisfaction)
+Case2_NA_A$HourlyRate <- as.numeric(Case2_NA_A$HourlyRate)
+Case2_NA_A$JobInvolvement <- as.numeric(Case2_NA_A$JobInvolvement)
+Case2_NA_A$JobLevel <- as.numeric(Case2_NA_A$JobLevel)
+Case2_NA_A$JobSatisfaction <- as.numeric(Case2_NA_A$JobSatisfaction)
+Case2_NA_A$MonthlyIncome <- as.numeric(Case2_NA_A$MonthlyIncome)
+Case2_NA_A$MonthlyRate <- as.numeric(Case2_NA_A$MonthlyRate)
+Case2_NA_A$NumCompaniesWorked <- as.numeric(Case2_NA_A$NumCompaniesWorked)
+Case2_NA_A$PercentSalaryHike <- as.numeric(Case2_NA_A$PercentSalaryHike)
+Case2_NA_A$PerformanceRating <- as.numeric(Case2_NA_A$PerformanceRating)
+Case2_NA_A$RelationshipSatisfaction <- as.numeric(Case2_NA_A$RelationshipSatisfaction)
+Case2_NA_A$StockOptionLevel <- as.numeric(Case2_NA_A$StockOptionLevel)
+Case2_NA_A$TotalWorkingYears <- as.numeric(Case2_NA_A$TotalWorkingYears)
+Case2_NA_A$TrainingTimesLastYear <- as.numeric(Case2_NA_A$TrainingTimesLastYear)
+Case2_NA_A$WorkLifeBalance <- as.numeric(Case2_NA_A$WorkLifeBalance)
+Case2_NA_A$YearsAtCompany <- as.numeric(Case2_NA_A$YearsAtCompany)
+Case2_NA_A$YearsInCurrentRole <- as.numeric(Case2_NA_A$YearsInCurrentRole)
+Case2_NA_A$YearsSinceLastPromotion <- as.numeric(Case2_NA_A$YearsSinceLastPromotion)
+Case2_NA_A$YearsWithCurrManager <- as.numeric(Case2_NA_A$YearsWithCurrManager)
+
+missing <- sapply(Case2_NA_A, function(x) sum(is.na(x)))
+sum(missing)
+summary(Case2_NA_A)
+```
+
+
+```{r}
+#Now we will use the most successful model, the Down Sampling model, to predict attrition using a small dataset of 300 employees without attrition values.
+model_D <- naiveBayes(Attrition ~ Age + JobInvolvement + JobLevel 
+                     + JobRole + MaritalStatus + MonthlyIncome + OverTime 
+                    + PercentSalaryHike + PerformanceRating 
+                    + TotalWorkingYears + YearsAtCompany + YearsInCurrentRole 
+                    + YearsSinceLastPromotion + YearsWithCurrManager, 
+                    data = Case2_A_DS, laplace = 1)
+
+#Now we can run the down sample model on the dataset for prediction. This will produce a new dataset of predictions for attrition.
+Case2_A_A_P <- data.frame(ID = Case2_NA_A$ID, Predict_Attrition = predict(model_D, newdata = Case2_NA_A))
+view(Case2_A_A_P)
+```
+
+
+```{r}
+Case2_A$Attrition <- ifelse(Case2$Attrition == "Yes", 1, 0)
+
+Case2_A$BusinessTravel <- factor(ifelse(Case2$BusinessTravel == "Non-Travel", 1,
+                      ifelse(Case2$BusinessTravel == "Travel_Rarely", 2,
+                          ifelse(Case2$BusinessTravel == "Travel_Frequently", 3, "NA"))),
+                                               levels = c("1", "2", "3", "NA"))
+
+Case2_A$Department <- factor(ifelse(Case2$Department == "Human Resources", 1,
+                      ifelse(Case2$Department == "Research & Development", 2,
+                          ifelse(Case2$Department == "Sales", 3, "NA"))),
+                                               levels = c("1", "2", "3", "NA"))
+
+Case2_A$EducationField <- factor(ifelse(Case2$EducationField == "Human Resources", 1,
+                    ifelse(Case2$EducationField == "Life Sciences", 2,
+                          ifelse(Case2$EducationField == "Marketing", 3, 
+                             ifelse(Case2$EducationField == "Medical", 4,
+                                    ifelse(Case2$EducationField == "Other", 5,
+                                          ifelse(Case2$EducationField == "Technical Degree", 6, "NA")))))),
+                                               levels = c("1", "2", "3", "4", "5", "6", "NA"))
+                                               
+Case2_A$Gender <- ifelse(Case2$Gender == "Female", 1, 2)
+
+Case2_A$JobRole <- factor(ifelse(Case2$JobRole == "Healthcare Representative", 1,
+                          ifelse(Case2$JobRole == "Human Resources", 2, 
+                             ifelse(Case2$JobRole == "Laboratory Technician", 3,
+                                    ifelse(Case2$JobRole == "Manager", 4,
+                                          ifelse(Case2$JobRole == "Manufacturing Director", 5, 
+                                                 ifelse(Case2$JobRole == "Research Director", 6,
+                                                        ifelse(Case2$JobRole == "Research Scientist", 7,
+                                                               ifelse(Case2$JobRole == "Sales Executive", 8,
+                                                                      ifelse(Case2$JobRole == "Sales Representative", 9, "NA"))))))))),
+                                               levels = c("1", "2", "3", "4", "5","6","7","8","9","NA"))
+
+Case2_A$MaritalStatus <- factor(ifelse(Case2$MaritalStatus == "Single", 1,
+                      ifelse(Case2$MaritalStatus == "Married", 2,
+                          ifelse(Case2$MaritalStatus == "Divorced", 3, "NA"))),
+                                               levels = c("1", "2", "3", "NA"))
+
+Case2_A$OverTime <- ifelse(Case2$OverTime == "Yes", 1, 0)
+view(Case2_A)
+
+
+Case2_A$Attrition <- as.numeric(Case2_A$Attrition)
+Case2_A$BusinessTravel <- as.numeric(Case2_A$BusinessTravel)
+Case2_A$Department <- as.numeric(Case2_A$Department)
+Case2_A$EducationField <- as.numeric(Case2_A$EducationField)
+Case2_A$Gender <- as.numeric(Case2_A$Gender)
+Case2_A$JobRole <- as.numeric(Case2_A$JobRole)
+Case2_A$MaritalStatus <- as.numeric(Case2_A$MaritalStatus)
+Case2_A$OverTime <- as.numeric(Case2_A$OverTime)
+Case2_A$ID <- as.numeric(Case2_A$ID)
+Case2_A$Age <- as.numeric(Case2_A$Age)
+Case2_A$DailyRate <- as.numeric(Case2_A$DailyRate)
+Case2_A$DistanceFromHome <- as.numeric(Case2_A$DistanceFromHome)
+Case2_A$Education <- as.numeric(Case2_A$Education)
+Case2_A$EnvironmentSatisfaction <- as.numeric(Case2_A$EnvironmentSatisfaction)
+Case2_A$HourlyRate <- as.numeric(Case2_A$HourlyRate)
+Case2_A$JobInvolvement <- as.numeric(Case2_A$JobInvolvement)
+Case2_A$JobLevel <- as.numeric(Case2_A$JobLevel)
+Case2_A$JobSatisfaction <- as.numeric(Case2_A$JobSatisfaction)
+Case2_A$MonthlyIncome <- as.numeric(Case2_A$MonthlyIncome)
+Case2_A$MonthlyRate <- as.numeric(Case2_A$MonthlyRate)
+Case2_A$NumCompaniesWorked <- as.numeric(Case2_A$NumCompaniesWorked)
+Case2_A$PercentSalaryHike <- as.numeric(Case2_A$PercentSalaryHike)
+Case2_A$PerformanceRating <- as.numeric(Case2_A$PerformanceRating)
+Case2_A$RelationshipSatisfaction <- as.numeric(Case2_A$RelationshipSatisfaction)
+Case2_A$StockOptionLevel <- as.numeric(Case2_A$StockOptionLevel)
+Case2_A$TotalWorkingYears <- as.numeric(Case2_A$TotalWorkingYears)
+Case2_A$TrainingTimesLastYear <- as.numeric(Case2_A$TrainingTimesLastYear)
+Case2_A$WorkLifeBalance <- as.numeric(Case2_A$WorkLifeBalance)
+Case2_A$YearsAtCompany <- as.numeric(Case2_A$YearsAtCompany)
+Case2_A$YearsInCurrentRole <- as.numeric(Case2_A$YearsInCurrentRole)
+Case2_A$YearsSinceLastPromotion <- as.numeric(Case2_A$YearsSinceLastPromotion)
+Case2_A$YearsWithCurrManager <- as.numeric(Case2_A$YearsWithCurrManager)
+
+#Let's check the MSPE 
+
+splitPerc = .7
+MSPE_Number = 100
+
+MSPE_Model_A = numeric(MSPE_Number)
+MSPE_Model_B = numeric(MSPE_Number)
+
+for (i in 1:MSPE_Number)
+{
+  trainIndices_MSPE = sample(seq(1,dim(Case2)[1]),round(.7*dim(Case2)[1]),replace = FALSE)
+  train_MSPE = Case2[trainIndices_MSPE,]
+  test_MSPE = Case2[-trainIndices_MSPE,]
+  
+  MSPE_Model_A = lm(MonthlyIncome ~ Age + JobInvolvement + JobLevel + JobLevel 
+                     + JobRole + MaritalStatus + OverTime 
+                    + PercentSalaryHike + PerformanceRating 
+                    + TotalWorkingYears + YearsAtCompany + YearsInCurrentRole 
+                    + YearsSinceLastPromotion + YearsWithCurrManager, data = train_MSPE)
+  
+  Predictions_Model_A = predict(MSPE_Model_A, newdata = test_MSPE)
+
+  #Model A Calculations
+  MSPE = mean((test_MSPE$MonthlyIncome - Predictions_Model_A)^2) #We used MSPE formula
+  
+  #Add MSPE_A value to previously created Model A
+  MSPE_Model_A[i] = MSPE
+  
+  #Model B - Using top 5 variables highly correlated to MonthlyIncome
+  MSPE_Model_B = lm(MonthlyIncome ~ Age + JobLevel + TotalWorkingYears 
+                    + YearsAtCompany + YearsInCurrentRole, data = train_MSPE)
+  Predictions_Model_B = predict(MSPE_Model_B, newdata = test_MSPE)
+  
+  
+  #Model B Calculations
+  MSPE = mean((test_MSPE$MonthlyIncome - Predictions_Model_B)^2) #We used MSPE formula for Model B
+  
+  #Add MSPE_B value to previously created Model B 
+  MSPE_Model_B[i] = MSPE
+  
+}
+view(Predictions_Model_A)
+view(test_MSPE)
+str(Predictions_Model_B)
+view(Predictions_Model_B)
+str(MSPE_Model_B)
+```
+ 
+```{r}
+#Now we will calculate RMSE in order to find the best model for predicting monthly income using the No Income dataset (also 300 observations).
+# RMSE Formula for Model A
+RMSE_Model_A <- sqrt(mean((test_MSPE$MonthlyIncome - Predictions_Model_A)^2))
+RMSE_Model_A #RMSE is 1057.54
+
+# RMSE Formula for Model A
+RMSE_Model_B <- sqrt(mean((test_MSPE$MonthlyIncome - Predictions_Model_B)^2))
+RMSE_Model_B #RMSE is 1357.33
+```
+
+
+```{r}
+#In order to predict monthly income, we will use the best model for predicting Attrition, the down sample Naive Bayes model.
+model_D <- naiveBayes(MonthlyIncome ~ Age + Attrition + JobInvolvement + JobLevel 
+                     + JobRole + MaritalStatus + OverTime 
+                    + PercentSalaryHike + PerformanceRating 
+                    + TotalWorkingYears + YearsAtCompany + YearsInCurrentRole 
+                    + YearsSinceLastPromotion + YearsWithCurrManager, 
+                    data = Case2_A_DS, laplace = 1)
+
+#Prep No Salary dataset for use (all variables to be numerics)
+Case2_NS <- Case2_NS %>% rename("ID" = "ï..ID")
+Case2_NS_S <- Case2_NS
+view(Case2_NS_S)
+
+Case2_NS_S <- Case2_NS_S %>% select(-c("Over18", "EmployeeCount", "StandardHours", "EmployeeNumber"))
+
+Case2_NS_S$Attrition <- ifelse(Case2_NS_S$Attrition == "Yes", 1, 0)
+
+Case2_NS_S$BusinessTravel <- factor(ifelse(Case2_NS$BusinessTravel == "Non-Travel", 1,
+                      ifelse(Case2_NS$BusinessTravel == "Travel_Rarely", 2,
+                          ifelse(Case2_NS$BusinessTravel == "Travel_Frequently", 3, "NA"))),
+                                               levels = c("1", "2", "3", "NA"))
+
+Case2_NS_S$Department <- factor(ifelse(Case2_NS$Department == "Human Resources", 1,
+                      ifelse(Case2_NS$Department == "Research & Development", 2,
+                          ifelse(Case2_NS$Department == "Sales", 3, "NA"))),
+                                               levels = c("1", "2", "3", "NA"))
+
+Case2_NS_S$EducationField <- factor(ifelse(Case2_NS$EducationField == "Human Resources", 1,
+                    ifelse(Case2_NS$EducationField == "Life Sciences", 2,
+                          ifelse(Case2_NS$EducationField == "Marketing", 3, 
+                             ifelse(Case2_NS$EducationField == "Medical", 4,
+                                    ifelse(Case2_NS$EducationField == "Other", 5,
+                                          ifelse(Case2_NS$EducationField == "Technical Degree", 6, "NA")))))),
+                                               levels = c("1", "2", "3", "4", "5", "6", "NA"))
+                                               
+Case2_NS_S$Gender <- ifelse(Case2_NS$Gender == "Female", 1, 2)
+
+Case2_NS_S$JobRole <- factor(ifelse(Case2_NS$JobRole == "Healthcare Representative", 1,
+                          ifelse(Case2_NS$JobRole == "Human Resources", 2, 
+                             ifelse(Case2_NS$JobRole == "Laboratory Technician", 3,
+                                    ifelse(Case2_NS$JobRole == "Manager", 4,
+                                          ifelse(Case2_NS$JobRole == "Manufacturing Director", 5, 
+                                                 ifelse(Case2_NS$JobRole == "Research Director", 6,
+                                                        ifelse(Case2_NS$JobRole == "Research Scientist", 7,
+                                                               ifelse(Case2_NS$JobRole == "Sales Executive", 8,
+                                                                      ifelse(Case2_NS$JobRole == "Sales Representative", 9, "NA"))))))))),
+                                               levels = c("1", "2", "3", "4", "5","6","7","8","9","NA"))
+
+Case2_NS_S$MaritalStatus <- factor(ifelse(Case2_NS$MaritalStatus == "Single", 1,
+                      ifelse(Case2_NS$MaritalStatus == "Married", 2,
+                          ifelse(Case2_NS$MaritalStatus == "Divorced", 3, "NA"))),
+                                               levels = c("1", "2", "3", "NA"))
+
+Case2_NS_S$OverTime <- ifelse(Case2_NS$OverTime == "Yes", 1, 0)
+view(Case2_NS_S)
+
+
+Case2_NS_S$BusinessTravel <- as.numeric(Case2_NS_S$BusinessTravel)
+Case2_NS_S$Department <- as.numeric(Case2_NS_S$Department)
+Case2_NS_S$EducationField <- as.numeric(Case2_NS_S$EducationField)
+Case2_NS_S$Gender <- as.numeric(Case2_NS_S$Gender)
+Case2_NS_S$JobRole <- as.numeric(Case2_NS_S$JobRole)
+Case2_NS_S$MaritalStatus <- as.numeric(Case2_NS_S$MaritalStatus)
+Case2_NS_S$OverTime <- as.numeric(Case2_NS_S$OverTime)
+Case2_NS_S$ID <- as.numeric(Case2_NS_S$ID)
+Case2_NS_S$Attrition <- as.numeric(Case2_NS_S$Attrition)
+Case2_NS_S$Age <- as.numeric(Case2_NS_S$Age)
+Case2_NS_S$DailyRate <- as.numeric(Case2_NS_S$DailyRate)
+Case2_NS_S$DistanceFromHome <- as.numeric(Case2_NS_S$DistanceFromHome)
+Case2_NS_S$Education <- as.numeric(Case2_NS_S$Education)
+Case2_NS_S$EnvironmentSatisfaction <- as.numeric(Case2_NS_S$EnvironmentSatisfaction)
+Case2_NS_S$HourlyRate <- as.numeric(Case2_NS_S$HourlyRate)
+Case2_NS_S$JobInvolvement <- as.numeric(Case2_NS_S$JobInvolvement)
+Case2_NS_S$JobLevel <- as.numeric(Case2_NS_S$JobLevel)
+Case2_NS_S$JobSatisfaction <- as.numeric(Case2_NS_S$JobSatisfaction)
+Case2_NS_S$MonthlyRate <- as.numeric(Case2_NS_S$MonthlyRate)
+Case2_NS_S$NumCompaniesWorked <- as.numeric(Case2_NS_S$NumCompaniesWorked)
+Case2_NS_S$PercentSalaryHike <- as.numeric(Case2_NS_S$PercentSalaryHike)
+Case2_NS_S$PerformanceRating <- as.numeric(Case2_NS_S$PerformanceRating)
+Case2_NS_S$RelationshipSatisfaction <- as.numeric(Case2_NS_S$RelationshipSatisfaction)
+Case2_NS_S$StockOptionLevel <- as.numeric(Case2_NS_S$StockOptionLevel)
+Case2_NS_S$TotalWorkingYears <- as.numeric(Case2_NS_S$TotalWorkingYears)
+Case2_NS_S$TrainingTimesLastYear <- as.numeric(Case2_NS_S$TrainingTimesLastYear)
+Case2_NS_S$WorkLifeBalance <- as.numeric(Case2_NS_S$WorkLifeBalance)
+Case2_NS_S$YearsAtCompany <- as.numeric(Case2_NS_S$YearsAtCompany)
+Case2_NS_S$YearsInCurrentRole <- as.numeric(Case2_NS_S$YearsInCurrentRole)
+Case2_NS_S$YearsSinceLastPromotion <- as.numeric(Case2_NS_S$YearsSinceLastPromotion)
+Case2_NS_S$YearsWithCurrManager <- as.numeric(Case2_NS_S$YearsWithCurrManager)
+
+missing <- sapply(Case2_NS_S, function(x) sum(is.na(x)))
+sum(missing)
+summary(Case2_NS_S)
+
+#Now we can run the down sample model on the dataset for prediction. This will produce a new dataset of predictions for monthly income.
+Case2_A_S_P <- data.frame(ID = Case2_NS_S$ID, Predict_MonthlyIncome = predict(model_D, newdata = Case2_NS_S))
+
+# Print first few rows of the attrition and monthly income predictions dataframe
+view(Case2_A_S_P)
+write.csv(Case2_A_A_P, "/Users/kenyaroy/doing data science/case study 2/CaseStudy2/Kenya_Roy_CaseStudy2Predictions_Attrition.csv", row.names=FALSE)
+write.csv(Case2_A_S_P, "/Users/kenyaroy/doing data science/case study 2/CaseStudy2/Kenya_Roy_CaseStudy2Predictions_Salary.csv", row.names=FALSE)
+```
+```{r}
+#Discussion:
+#Using the information you all at Frito-Lay provided us, we were able to conduct a thorough exploratory data analysis, through that analysis, we found that attrition and monthly income are correlated to plenty of internal and external variables at Frito-Lay. We found that the top three variables correlated to employee attrition are Overtime, Marital Status, and Job Involvement. Further, we found that our models for attrition and monthly income were successful in predicting the two variables. We find that our observations could help Frito-Lay strengthen employee retention. 
+
+#Our recommendations are the following: Focus on bringing down overtime work. This could be tied in with job involvement's high correlation to attrition as well. Employees could stand to have their work assignments/ role expectations reorganized to improve workload and work-life balance. Focusing on these variables could be key to your company turning around retention as employees priorities have shifted in the face of the COVID-19 pandemic: According to a LinkedIn Report on COVID-19 Talent Trends, burnout has risen around 9% since the start of the pandemic. In the face of the Great Resignation, an employer like you have the capacity and tools strategize to make sure employees are happy with their job involvement, including overtime. 
+
+#Should you need any further assistance piecing out your study into employee attrition, we would be happy to move forward. 
+
+#Contact Kenya Roy at kroy@mail.smu.edu for access to her github.io, datasets, or further questions.
+```
